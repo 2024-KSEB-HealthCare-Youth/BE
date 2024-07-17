@@ -20,7 +20,7 @@ public class ResultItem {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "item_id", nullable = false)
+    @JoinColumn(name = "result_id", nullable = false)
     private Result result;
 
     @ManyToOne
