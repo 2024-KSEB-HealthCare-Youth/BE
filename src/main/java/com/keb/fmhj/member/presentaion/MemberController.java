@@ -70,7 +70,7 @@ public class MemberController {
      */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        // 로그아웃 로직 (Session or Token invalidation)
+        // 여기 추가해야됨
         return ResponseEntity.ok().build();
     }
 }
