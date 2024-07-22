@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Getter @Setter
@@ -22,7 +21,7 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String loginId;
 
     @Column(nullable = false)
@@ -50,55 +49,14 @@ public class Member extends BaseTimeEntity {
     @Column
     private String profileImage;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Result> results;
 
-    public void update(UpdateMemberDto requestDto) {
-        if (requestDto.getPassword() != null) {
-            this.password = requestDto.getPassword();
-        }
-        if (requestDto.getName() != null) {
-            this.name = requestDto.getName();
-        }
-        if (requestDto.getNickName() != null) {
-            this.nickname = requestDto.getNickName();
-        }
-        if (requestDto.getAge() != null) {
-            this.age = requestDto.getAge();
-        }
-        if (requestDto.getPhoneNumber() != null) {
-            this.phoneNumber = requestDto.getPhoneNumber();
-        }
-        if (requestDto.getEmail() != null) {
-            this.email = requestDto.getEmail();
-        }
-        if (requestDto.getProfileImage() != null) {
-            this.profileImage = requestDto.getProfileImage();
-        }
-    }
-
-    // 이름 변경
-    public void changeName(String newName) {
-        this.name = newName;
-    }
-
-    // 닉네임 변경
-    public void changeNickname(String newNickname) {
-        this.nickname = newNickname;
-    }
-
-    // 전화번호 변경
-    public void changePhoneNumber(String newPhoneNumber) {
-        this.phoneNumber = newPhoneNumber;
-    }
-
-    // 이메일 변경
-    public void changeEmail(String newEmail) {
-        this.email = newEmail;
-    }
-
-    // 프로필 이미지 변경
-    public void changeProfileImage(String newProfileImage) {
-        this.profileImage = newProfileImage;
+    public void update(String name, String nickname, String phoneNumber, String email, String profileImage) {
+        this.name = name;
+        this.nickname = nickname;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.profileImage = profileImage;
     }
 }

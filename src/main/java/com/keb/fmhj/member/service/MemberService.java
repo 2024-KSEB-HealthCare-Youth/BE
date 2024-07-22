@@ -1,14 +1,16 @@
 package com.keb.fmhj.member.service;
 
+import com.keb.fmhj.global.exception.ErrorCode;
+import com.keb.fmhj.global.exception.YouthException;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.member.domain.dto.request.SignInDto;
 import com.keb.fmhj.member.domain.dto.request.SignUpDto;
-import com.keb.fmhj.member.domain.dto.request.UpdateMemberDto;
 import com.keb.fmhj.member.domain.dto.response.MemberDetailDto;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,42 +19,61 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
-
-    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
-        this.memberRepository = memberRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     /**
      * 회원 등록
      */
-    @Transactional
-    public Long save(SignUpDto requestDto) {
-        validateLoginIdDuplicated(requestDto.getLoginId());
-        return memberRepository.save(SignUpDto.toEntity(requestDto)).getId();
+    public void join(SignUpDto signUpDtoDto) {
+
+        validateExistMember(signUpDtoDto);
+        Member joinMember = Member.builder()
+                .loginId(signUpDtoDto.getLoginId())
+                .password(bCryptPasswordEncoder.encode(signUpDtoDto.getPassword()))
+                .name(signUpDtoDto.getName())
+                .nickname(signUpDtoDto.getNickName())
+                .gender(signUpDtoDto.getGender())
+                .age(signUpDtoDto.getAge())
+                .phoneNumber(signUpDtoDto.getPhoneNumber())
+                .email(signUpDtoDto.getEmail())
+                .profileImage(signUpDtoDto.getProfileImage())
+                .build();
+        memberRepository.save(joinMember);
+    }
+
+    private void validateExistMember(SignUpDto joinDto) {
+        String loginId = joinDto.getLoginId();
+        if (memberRepository.existsByLoginId(loginId)) {
+            throw YouthException.from(ErrorCode.USER_NOT_FOUND);
+        }
     }
 
     /**
      * 회원 수정
      */
-    @Transactional
-    public Long updateMember(Long id, UpdateMemberDto requestDto) {
-        Member member = memberRepository.findById(id).orElseThrow(()
-                -> new IllegalArgumentException("해당 회원은 존재하지 않습니다."));
-        member.update(requestDto);
-        return memberRepository.save(member).getId();
-    }
+//    @Transactional
+//    public void updateMember(String loginId, UpdateMemberDto requestDto) {
+//
+//        if(memberRepository.existsByLoginId(loginId)) {
+//            throw YouthException.from(ErrorCode.USER_NOT_FOUND);
+//        }
+//
+//        Optional<Member> member = memberRepository.findByLoginId(loginId);
+//        member.get().update(requestDto.getName(), requestDto.getNickName(), requestDto.getPhoneNumber(),
+//                requestDto.getEmail(), requestDto.getProfileImage());
+//
+//        memberRepository.save(requestDto);
+//    }
 
     /**
      * 회원 조회
      */
-    public MemberDetailDto findById(Long id) {
-        Member entity = memberRepository.findById(id).orElseThrow(()
+    public MemberDetailDto findByLoginId(String memberId) {
+        Member entity = memberRepository.findByLoginId(memberId).orElseThrow(()
                 -> new IllegalArgumentException("해당 회원은 존재하지 않습니다."));
         return MemberDetailDto.toDto(entity);
     }
@@ -71,18 +92,18 @@ public class MemberService {
      * 회원 삭제
      */
     @Transactional
-    public Long deleteMember(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("해당 회원은 존재하지 않습니다: " + id));
+    public String deleteMember(String loginId) {
+        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() ->
+                new IllegalArgumentException("해당 회원은 존재하지 않습니다: " + loginId));
         memberRepository.delete(member);
-        return id;
+        return loginId;
     }
 
     public MemberDetailDto login(SignInDto signInDto) {
         Member member = memberRepository.findByLoginId(signInDto.getLoginId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with login ID: " + signInDto.getLoginId()));
 
-        if (!passwordEncoder.matches(signInDto.getPassword(), member.getPassword())) {
+        if (!bCryptPasswordEncoder.matches(signInDto.getPassword(), member.getPassword())) {
             throw new IllegalStateException("Invalid credentials");
         }
 
