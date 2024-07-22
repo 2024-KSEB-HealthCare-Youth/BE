@@ -5,7 +5,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 1234
-    url: jdbc:mysql://127.0.0.1:3307/youth
+    url: jdbc:mysql://52.79.103.61:3307/youth
 
   # Spring Data JPA
   jpa:
