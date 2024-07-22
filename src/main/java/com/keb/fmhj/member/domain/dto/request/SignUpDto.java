@@ -23,8 +23,6 @@ public class SignUpDto {
     @NotNull(message = "이름를 입력해주세요!")
     private String name;
 
-    private String nickName;
-
     @NotNull(message = "성별을 선택해주세요!")
     private Gender gender;
 
@@ -43,7 +41,6 @@ public class SignUpDto {
                 .loginId(requestDto.getLoginId())
                 .password(requestDto.getPassword())
                 .name(requestDto.getName())
-                .nickname(requestDto.getNickName())
                 .gender(requestDto.getGender())
                 .age(requestDto.getAge())
                 .phoneNumber(requestDto.getPhoneNumber())

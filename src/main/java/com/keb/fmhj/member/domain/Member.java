@@ -1,7 +1,6 @@
 package com.keb.fmhj.member.domain;
 
 import com.keb.fmhj.global.BaseTimeEntity;
-import com.keb.fmhj.member.domain.dto.request.UpdateMemberDto;
 import com.keb.fmhj.result.domain.Result;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,9 +30,6 @@ public class Member extends BaseTimeEntity {
     private String name;
 
     @Column
-    private String nickname;
-
-    @Column
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -52,9 +48,8 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Result> results;
 
-    public void update(String name, String nickname, String phoneNumber, String email, String profileImage) {
+    public void update(String name, String phoneNumber, String email, String profileImage) {
         this.name = name;
-        this.nickname = nickname;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.profileImage = profileImage;

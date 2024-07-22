@@ -9,9 +9,8 @@ import lombok.Getter;
 @Builder
 public class MemberDetailDto {
 
-    private Long loginId;
+    private String loginId;
     private String name;
-    private String nickName;
     private Gender gender;
     private Integer age;
     private String phoneNumber;
@@ -20,9 +19,8 @@ public class MemberDetailDto {
 
     public static MemberDetailDto toDto(Member member) {
         return MemberDetailDto.builder()
-                .loginId(member.getId())
+                .loginId(member.getLoginId())
                 .name(member.getName())
-                .nickName(member.getNickname())
                 .gender(member.getGender())
                 .age(member.getAge())
                 .phoneNumber(member.getPhoneNumber())
