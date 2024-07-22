@@ -1,5 +1,9 @@
 package com.keb.fmhj.member.presentaion;
 
+import com.keb.fmhj.global.exception.ErrorCode;
+import com.keb.fmhj.global.exception.YouthException;
+import com.keb.fmhj.global.response.ApiResponse;
+import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.member.domain.dto.request.SignInDto;
 import com.keb.fmhj.member.domain.dto.request.SignUpDto;
 import com.keb.fmhj.member.domain.dto.request.UpdateMemberDto;
@@ -8,6 +12,8 @@ import com.keb.fmhj.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -22,36 +28,45 @@ public class MemberController {
      * 회원 등록
      */
     @PostMapping
-    public ResponseEntity<MemberDetailDto> addMember(@RequestBody SignUpDto requestDto) {
-        Long memberId = memberService.save(requestDto);
-        MemberDetailDto memberDetail = memberService.findById(memberId);
-        return ResponseEntity.ok(memberDetail);
+    public ApiResponse<Member> join(@Validated @RequestBody SignUpDto memberJoinRequest, Errors errors) {
+        validateRequest(errors);
+        memberService.join(memberJoinRequest);
+        return new ApiResponse<>(ErrorCode.REQUEST_OK);
+    }
+
+    private void validateRequest(Errors errors) {
+        if (errors.hasErrors()) {
+            errors.getFieldErrors().forEach(error -> {
+                String errorMessage = error.getDefaultMessage();
+                throw YouthException.from(ErrorCode.INVALID_REQUEST);
+            });
+        }
     }
 
     /**
      * 회원 조회
      */
     @GetMapping("/{memberId}")
-    public ResponseEntity<MemberDetailDto> findDetailMember(@PathVariable Long memberId) {
-        MemberDetailDto memberDetail = memberService.findById(memberId);
+    public ResponseEntity<MemberDetailDto> findDetailMember(@PathVariable String memberId) {
+        MemberDetailDto memberDetail = memberService.findByLoginId(memberId);
         return ResponseEntity.ok(memberDetail);
     }
 
     /**
      * 회원 수정
      */
-    @PutMapping("/{memberId}")
-    public ResponseEntity<MemberDetailDto> updateMember(@PathVariable Long memberId, @RequestBody UpdateMemberDto requestDto) {
-        memberService.updateMember(memberId, requestDto);
-        MemberDetailDto updatedMember = memberService.findById(memberId);
-        return ResponseEntity.ok(updatedMember);
-    }
+//    @PutMapping("/{memberId}")
+//    public ResponseEntity<MemberDetailDto> updateMember(@PathVariable String memberId, @RequestBody UpdateMemberDto requestDto) {
+//        memberService.updateMember(memberId, requestDto);
+//        MemberDetailDto updatedMember = memberService.findByLoginId(memberId);
+//        return ResponseEntity.ok(updatedMember);
+//    }
 
     /**
      * 회원 삭제
      */
     @DeleteMapping("/{memberId}")
-    public ResponseEntity<Void> deleteMember(@PathVariable Long memberId) {
+    public ResponseEntity<Void> deleteMember(@PathVariable String memberId) {
         memberService.deleteMember(memberId);
         return ResponseEntity.ok().build();
     }
