@@ -1,35 +1,23 @@
-version: '3.8'
+version: '3.1'
 
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Dockerfile 경로 확인
+    container_name: youth-app-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
   db:
     image: mysql:8.3
     container_name: youth-mysql-container
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: youth
     ports:
       - "3307:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-
-  app:
-    image: com.keb/fmhj:0.0.1-SNAPSHOT
-    container_name: youth-app-container
-    restart: always
-    depends_on:
-      - db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/youth
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 1234
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./build/libs:/app
-    working_dir: /app
-    command: java -jar fmhj-0.0.1-SNAPSHOT.jar
-
 volumes:
   mysql-data:
