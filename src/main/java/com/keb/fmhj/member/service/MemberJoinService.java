@@ -3,20 +3,13 @@ package com.keb.fmhj.member.service;
 import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
 import com.keb.fmhj.member.domain.Member;
-import com.keb.fmhj.member.domain.dto.request.SignInDto;
 import com.keb.fmhj.member.domain.dto.request.SignUpDto;
-import com.keb.fmhj.member.domain.dto.response.MemberDetailDto;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -27,9 +20,7 @@ public class MemberJoinService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    /**
-     * 회원 등록
-     */
+    // 회원 등록
     public void join(SignUpDto signUpDtoDto) {
 
         validateExistMember(signUpDtoDto);
@@ -46,6 +37,7 @@ public class MemberJoinService {
         memberRepository.save(joinMember);
     }
 
+    // 회원 존재 유무
     private void validateExistMember(SignUpDto joinDto) {
         String loginId = joinDto.getLoginId();
         if (memberRepository.existsByLoginId(loginId)) {
