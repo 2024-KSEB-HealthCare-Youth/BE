@@ -1,12 +1,7 @@
 package com.keb.fmhj.result.service;
+import com.keb.fmhj.global.response.ApiResponse;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class ResultService {
-
+public interface ResultService {
+    ApiResponse<?> getResultDetail(Long memberId, Long resultId);
+    ApiResponse<?> getResultList(Long memberId);
 }
