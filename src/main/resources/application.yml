@@ -1,10 +1,10 @@
 spring:
 
-  # Database
+  # Database - 추후에 환경변수 설정 필요
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: dkwlsWkQkfflRmxsorhshfrhtlvek!!
+    username: fmhj
+    password: dbtmrkalfoek!!
     url: jdbc:mysql://52.79.103.61:3306/youth
 
   # Spring Data JPA
