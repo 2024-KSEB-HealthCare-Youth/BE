@@ -35,11 +35,13 @@ public class MemberService {
                 .loginId(signUpDtoDto.getLoginId())
                 .password(bCryptPasswordEncoder.encode(signUpDtoDto.getPassword()))
                 .name(signUpDtoDto.getName())
+                .nickName(signUpDtoDto.getNickName())
                 .gender(signUpDtoDto.getGender())
                 .age(signUpDtoDto.getAge())
                 .phoneNumber(signUpDtoDto.getPhoneNumber())
                 .email(signUpDtoDto.getEmail())
                 .profileImage(signUpDtoDto.getProfileImage())
+                .isAdmin(signUpDtoDto.getIsAdmin())
                 .build();
         memberRepository.save(joinMember);
     }
@@ -80,6 +82,7 @@ public class MemberService {
                 .orElseThrow(() -> YouthException.from(ErrorCode.USER_NOT_FOUND));
 
         member.setName(updateDto.getName());
+        member.setNickName(updateDto.getNickName());
         member.setEmail(updateDto.getEmail());
         member.setPhoneNumber(updateDto.getPhoneNumber());
         member.setProfileImage(updateDto.getProfileImage());
