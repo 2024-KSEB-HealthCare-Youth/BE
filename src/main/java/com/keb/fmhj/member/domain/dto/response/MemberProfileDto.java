@@ -18,7 +18,7 @@ public class MemberProfileDto {
     public static MemberProfileDto toDto(Member member) {
         return MemberProfileDto.builder()
                 .name(member.getName())
-                .nickName(member.getName())
+                .nickName(member.getNickName())
                 .gender(member.getGender())
                 .age(member.getAge())
                 .profileImage(member.getProfileImage())

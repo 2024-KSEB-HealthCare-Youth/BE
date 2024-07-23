@@ -30,6 +30,9 @@ public class Member extends BaseTimeEntity {
     private String name;
 
     @Column
+    private String nickName;
+
+    @Column
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -45,11 +48,18 @@ public class Member extends BaseTimeEntity {
     @Column
     private String profileImage;
 
+    @Column
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private IsAdmin isAdmin = IsAdmin.USER;
+
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Result> results;
 
-    public void update(String name, String phoneNumber, String email, String profileImage) {
+
+    public void update(String name, String nickName, String phoneNumber, String email, String profileImage) {
         this.name = name;
+        this.nickName = nickName;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.profileImage = profileImage;

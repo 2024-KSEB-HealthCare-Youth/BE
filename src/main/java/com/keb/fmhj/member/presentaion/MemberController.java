@@ -57,6 +57,7 @@ public class MemberController {
         return new ApiResponse<>(members);
     }
 
+    // 회원 수정
     @PutMapping("/{memberId}")
     public ApiResponse<UpdateMemberDto> updateMember(
             @PathVariable("memberId") String loginId,
@@ -66,6 +67,7 @@ public class MemberController {
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 
+    // 회원 삭제
     @DeleteMapping("/{memberId}")
     public ApiResponse<Void> deleteMember(@PathVariable("memberId") String loginId) {
         memberService.deleteMember(loginId);
