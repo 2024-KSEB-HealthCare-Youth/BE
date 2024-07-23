@@ -1,15 +1,6 @@
 version: '3.1'
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile  # Dockerfile 경로 확인
-    container_name: youth-app-container
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
 
   db:
     image: mysql:8.3
@@ -19,5 +10,16 @@ services:
       MYSQL_DATABASE: youth
     ports:
       - "3307:3306"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: youth-app-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
 volumes:
   mysql-data:
