@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/members")
+@RequestMapping
 public class MemberService {
 
     private final MemberRepository memberRepository;
