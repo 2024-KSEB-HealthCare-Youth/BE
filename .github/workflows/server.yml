@@ -20,6 +20,15 @@ jobs:
   build:
   
     runs-on: ubuntu-latest
+
+    env: # Github 레포 secrets에서 가져옴
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      JWT_TOKEN_VALIDITY: ${{ secrets.JWT_TOKEN_VALIDITY }}
     
     steps:
       # 기본 체크아웃 - 레포지토리의 최신 코드를 가져와 현재 워크플로우에서 사용할 수 있도록 로컬에 복제
