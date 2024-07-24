@@ -13,9 +13,14 @@ on:
   pull_request:
     branches: [ "develop" ]
 
+permissions:
+  contents: read
+  
 jobs:
   build:
+  
     runs-on: ubuntu-latest
+    
     steps:
       # 기본 체크아웃 - 레포지토리의 최신 코드를 가져와 현재 워크플로우에서 사용할 수 있도록 로컬에 복제
       - name: Checkout
