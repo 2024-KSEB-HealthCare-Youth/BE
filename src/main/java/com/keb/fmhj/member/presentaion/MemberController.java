@@ -26,7 +26,7 @@ public class MemberController {
     private final MemberService memberService;
 
     // 회원 등록
-    @PostMapping
+    @PostMapping("/join")
     public ApiResponse<Member> join(@Validated @RequestBody SignUpDto memberJoinRequest, Errors errors) {
         validateRequest(errors);
         memberService.join(memberJoinRequest);
