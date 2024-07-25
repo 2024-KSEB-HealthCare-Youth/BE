@@ -38,7 +38,6 @@ jobs:
           script_stop: true
           script:
             cd /home/ubuntu/BE
-            mkdir -p src/main/resources
             rm -rf src/main/resources/application.yml
             git pull origin develop
             echo "$APPLICATION_PROPERTIES" > src/main/resources/application.yml
