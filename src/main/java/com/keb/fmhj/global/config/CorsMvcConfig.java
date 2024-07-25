@@ -17,3 +17,4 @@ public class CorsMvcConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://52.79.103.61:8080");
     }
 }
+
