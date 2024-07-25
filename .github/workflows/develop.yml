@@ -36,13 +36,11 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           envs: APPLICATION_PROPERTIES
           script_stop: true
-          script:
-            cd ~/.ssh/BE/src/main
-            mkdir -p resources
-            cd resources
+          script: |
+            cd /home/ubuntu/BE/src/main/resources
             rm -f application.yml
             echo "$APPLICATION_PROPERTIES" > application.yml
-            cd ../../..
+            cd /home/ubuntu/BE
             ./gradlew clean build
             sudo fuser -k -n tcp 8080 || true
-            nohup java -jar build/libs/fmhj-0.0.1-SNAPSHOT.jar > ../output.log 2>&1 &
+            nohup java -jar build/libs/fmhj-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
