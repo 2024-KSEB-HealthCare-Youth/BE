@@ -35,13 +35,15 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          envs: APPLICATION_PROPERTIES
           script_stop: true
           script:
             cd /home/ubuntu/BE
+            mkdir -p src/main/resources
             rm -rf src/main/resources/application.yml
             git pull origin develop
+            echo "Checking if APPLICATION_PROPERTIES is set"
             echo "$APPLICATION_PROPERTIES" > src/main/resources/application.yml
+            cat src/main/resources/application.yml
             ./gradlew clean build
             sudo fuser -k -n tcp 8080 || true
-            nohup java -jar build/libs/fmhj-0.0.1-SNAPSHOT.jar > ../output.log 2>&1 &
+            nohup java -jar build/libs/fmhj-0.0.1-SNAPSHOT.jar > output.log 2>&1 &
