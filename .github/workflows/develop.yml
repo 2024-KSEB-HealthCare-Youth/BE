@@ -1,0 +1,59 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+# workflow 이름
+name: Java CI with Gradle
+
+# Event: 실행되는 시점을 설정
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+permissions:
+  contents: read
+
+# 하나의 Workflow는 1개 이상의 Job으로 구성됨
+# 여러 Job들은 병렬 처리가 디폴트
+jobs:
+  build:
+
+    # ubuntu 환경 / 가장 최신 버전
+    runs-on: ubuntu-latest
+
+    env: # Github 레포 secrets에서 가져옴
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      JWT_TOKEN_VALIDITY: ${{ secrets.JWT_TOKEN_VALIDITY }}
+
+    # Step: 특정 작업을 수행하는 가장 작은 단위
+    # Job은 여러 Step들로 구성
+    steps:
+    
+      - name: SSH(원격 접속)로 EC2에 접속하기
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script_stop: true
+          script:
+            cd /home/ubuntu/BE
+            git pull origin develop
+            ./gradlew clean build
+            sudo fuser -k -n tcp 8080 || true
+            nohup java -jar build/libs/fmhj-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
+
