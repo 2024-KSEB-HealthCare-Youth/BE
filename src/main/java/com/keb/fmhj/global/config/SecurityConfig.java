@@ -35,10 +35,10 @@ public class SecurityConfig {
         this.memberRepository = memberRepository;
     }
 
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return web -> web.ignoring().anyRequest();
-//    }
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().anyRequest();
+    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -54,6 +54,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        http
+                .cors((cors) -> cors
+                        .configurationSource((new CorsConfigurationSource() {
+
+                            @Override
+                            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+
+                                CorsConfiguration configuration = new CorsConfiguration();
+
+                                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8080"));
+                                configuration.setAllowedOrigins(Collections.singletonList("http://52.79.103.61:3000"));
+                                configuration.setAllowedOrigins(Collections.singletonList("http://52.79.103.61:8080"));
+                                configuration.setAllowedMethods(Collections.singletonList("*"));
+                                configuration.setAllowCredentials(true);
+                                configuration.setAllowedHeaders(Collections.singletonList("*"));
+                                configuration.setMaxAge(3600L);
+
+                                configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+
+                                return configuration;
+                            }
+                        })));
 
         http
                 .csrf((auth) -> auth.disable());
@@ -83,3 +106,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+
