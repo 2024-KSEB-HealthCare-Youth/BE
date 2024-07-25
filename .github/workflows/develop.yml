@@ -25,6 +25,7 @@ jobs:
 
     # Step: 특정 작업을 수행하는 가장 작은 단위
     # Job은 여러 Step들로 구성
+    # script 여러 줄의 명령어 실행하려면 |를 써줘야 함
     steps:
 
       - name: SSH(원격 접속)로 EC2에 접속하기
