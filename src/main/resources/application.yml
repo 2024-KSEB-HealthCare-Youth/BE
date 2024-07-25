@@ -3,9 +3,9 @@ spring:
   # Database - 추후에 환경변수 설정 필요
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: fmhj
+    password: dbtmrkalfoek!!
+    url: jdbc:mysql://52.79.103.61:3306/youth
 
   # Spring Data JPA
   jpa:
@@ -17,8 +17,8 @@ spring:
 
   # JWT 설정
   jwt:
-    secret-key: ${JWT_SECRET_KEY}
-    token-validity: ${JWT_TOKEN_VALIDITY}
+    secret-key: VlwEyVBsYt9V7zq57TejMnTUyz5lYcfPQye08f7MhQA9XkHa
+    token-validity: 86400000
 
 # p6spy log
 decorator:

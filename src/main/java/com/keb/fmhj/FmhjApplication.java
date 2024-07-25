@@ -12,5 +12,5 @@ public class FmhjApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FmhjApplication.class, args);
 	}
-
+	
 }

@@ -26,7 +26,6 @@ jobs:
     # Step: 특정 작업을 수행하는 가장 작은 단위
     # Job은 여러 Step들로 구성
     steps:
-    
       - name: SSH(원격 접속)로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3
         env:
