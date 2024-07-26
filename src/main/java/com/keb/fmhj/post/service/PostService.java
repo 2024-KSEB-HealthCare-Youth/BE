@@ -4,7 +4,6 @@ import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
-import com.keb.fmhj.post.domain.Category;
 import com.keb.fmhj.post.domain.Post;
 import com.keb.fmhj.post.domain.dto.request.PostDTO;
 import com.keb.fmhj.post.domain.repository.PostRepository;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class PostService {
 
     private final PostRepository postRepository;
@@ -29,39 +27,64 @@ public class PostService {
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> YouthException.from(ErrorCode.USER_NOT_FOUND));
 
-        Post post = PostDTO.toEntity(postDTO);
-        post.setMember(member); // Member 객체를 Post에 설정
+        Post post = Post.builder()
+                .title(postDTO.getTitle())
+                .content(postDTO.getContent())
+                .category(postDTO.getCategory())
+                .member(member)
+                .build();
         return postRepository.save(post);
     }
 
-    // 로그인한 사용자의 전체 게시글 조회
-    public List<PostDTO> getAllPosts(String loginId) {
-        return postRepository.findAllByMember_LoginId(loginId).stream()
+    // 전체 게시글 조회
+    @Transactional
+    public List<PostDTO> getAllPosts() {
+        return postRepository.findAll().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
-    // 로그인한 사용자의 단일 게시글 조회
-    public Optional<PostDTO> getPostById(Long id, String loginId) {
-        return postRepository.findByIdAndMember_LoginId(id, loginId)
-                .map(this::convertToDto);
+    // 단일 게시글 조회
+    @Transactional
+    public List<PostDTO> getPostByLoginId(String loginId) {
+        return postRepository.findByMember_LoginId(loginId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
     }
 
     // 게시글 수정
-    public Post updatePost(Long id, PostDTO postDTO, String loginId) {
-        Post post = postRepository.findByIdAndMember_LoginId(id, loginId)
+    @Transactional
+    public PostDTO updatePost(Long id, PostDTO postDTO, String loginId) {
+        Post post = postRepository.findById(id)
                 .orElseThrow(() -> YouthException.from(ErrorCode.POST_NOT_FOUND));
+
+        // 로그인한 사용자가 이 게시글의 작성자인지 확인
+        if (!post.getMember().getLoginId().equals(loginId)) {
+            throw YouthException.from(ErrorCode.USER_NOT_AUTHORIZED);
+        }
 
         post.setTitle(postDTO.getTitle());
         post.setContent(postDTO.getContent());
         post.setCategory(postDTO.getCategory());
-        return postRepository.save(post);
+
+        Post updatedPost = postRepository.save(post);
+
+        // DTO로 변환하여 반환
+        return PostDTO.fromEntity(updatedPost);
     }
 
+
     // 게시글 삭제
+    @Transactional
     public void deletePost(Long id, String loginId) {
-        Post post = postRepository.findByIdAndMember_LoginId(id, loginId)
+        Post post = postRepository.findById(id)
                 .orElseThrow(() -> YouthException.from(ErrorCode.POST_NOT_FOUND));
+
+        // 로그인한 사용자가 이 게시글의 작성자인지 확인
+        if (!post.getMember().getLoginId().equals(loginId)) {
+            throw YouthException.from(ErrorCode.USER_NOT_AUTHORIZED);
+        }
 
         postRepository.deleteById(id);
     }
@@ -71,7 +94,6 @@ public class PostService {
         postDTO.setTitle(post.getTitle());
         postDTO.setContent(post.getContent());
         postDTO.setCategory(post.getCategory());
-        postDTO.setMember(post.getMember());
         return postDTO;
     }
 }

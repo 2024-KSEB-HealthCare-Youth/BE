@@ -7,6 +7,7 @@ import com.keb.fmhj.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,6 +30,14 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments= new ArrayList<>();
+
     @Column
     private Long likeCount;
 
@@ -42,13 +51,7 @@ public class Post extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
 
 //    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Comment> comments;
-//
-//    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Like> likes;
+//    private List<Like> likes = new ArrayList<>();
 }
