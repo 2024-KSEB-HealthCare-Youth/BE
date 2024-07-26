@@ -28,8 +28,7 @@ public class ResultController {
     }
 
     @GetMapping("/{resultId}")
-    @Operation(summary = "단일 결과 화면 조회 API", description = "단일 결과 화면을 조회합니다.")
-    public ApiResponse<?> getResultDetail(@PathVariable Long resultId){
+    public ApiResponse<?> getResultDetail(@PathVariable("resultId") Long resultId){
         return new ApiResponse<>(resultService.getResultDetail(resultId));
     }
 }

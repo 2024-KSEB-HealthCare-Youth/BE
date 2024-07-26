@@ -78,8 +78,8 @@ public class MemberController {
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 
-    @GetMapping("/mypage")
-    @Operation(summary = "마이페이지 API", description = "회원의 결과를 조회합니다.")
+    //마이페이지 조회
+    @PostMapping("/mypage")
     public ApiResponse<MypageResponseDto> getMypage(@RequestBody MypageReqeustDto mypageReqeustDto){
 
         return new ApiResponse<>(memberService.getMypage(mypageReqeustDto));
