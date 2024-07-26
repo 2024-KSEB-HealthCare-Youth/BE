@@ -11,6 +11,7 @@ public class MemberDetailDto {
 
     private String loginId;
     private String name;
+    private String nickName;
     private Gender gender;
     private Integer age;
     private String phoneNumber;
@@ -21,6 +22,7 @@ public class MemberDetailDto {
         return MemberDetailDto.builder()
                 .loginId(member.getLoginId())
                 .name(member.getName())
+                .nickName(member.getNickName())
                 .gender(member.getGender())
                 .age(member.getAge())
                 .phoneNumber(member.getPhoneNumber())

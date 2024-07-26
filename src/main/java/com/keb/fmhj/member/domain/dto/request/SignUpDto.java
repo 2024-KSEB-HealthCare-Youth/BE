@@ -1,15 +1,15 @@
 package com.keb.fmhj.member.domain.dto.request;
 
 import com.keb.fmhj.member.domain.Gender;
+import com.keb.fmhj.member.domain.IsAdmin;
 import com.keb.fmhj.member.domain.Member;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignUpDto {
@@ -20,32 +20,35 @@ public class SignUpDto {
     @NotNull(message = "비밀번호를 입력해주세요!")
     private String password;
 
-    @NotNull(message = "이름를 입력해주세요!")
     private String name;
 
-    @NotNull(message = "성별을 선택해주세요!")
+    private String nickName;
+
     private Gender gender;
 
-    @NotNull(message = "나이를 입력해주세요!")
     private Integer age;
 
-    @NotNull(message = "전화번호를 입력해주세요!")
     private String phoneNumber;
 
     private String email;
 
     private String profileImage;
 
+    @Builder.Default
+    private IsAdmin isAdmin = IsAdmin.USER;
+
     public static Member toEntity(SignUpDto requestDto) {
         return Member.builder()
                 .loginId(requestDto.getLoginId())
                 .password(requestDto.getPassword())
                 .name(requestDto.getName())
+                .nickName(requestDto.getNickName())
                 .gender(requestDto.getGender())
                 .age(requestDto.getAge())
                 .phoneNumber(requestDto.getPhoneNumber())
                 .email(requestDto.getEmail())
                 .profileImage(requestDto.getProfileImage())
+                .isAdmin(requestDto.getIsAdmin())
                 .build();
     }
 }
