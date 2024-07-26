@@ -1,6 +1,6 @@
 package com.keb.fmhj.post.domain.dto.request;
 
-import com.keb.fmhj.member.domain.Member;
+import com.keb.fmhj.member.domain.dto.MemberDTO;
 import com.keb.fmhj.post.domain.Category;
 import com.keb.fmhj.post.domain.Post;
 import jakarta.validation.constraints.NotBlank;
@@ -23,15 +23,15 @@ public class PostDTO {
 
     private Category category;
 
-    private Member member;
+    private MemberDTO member;
 
-    public static Post toEntity(PostDTO postDTO) {
-        return Post.builder()
-                .title(postDTO.getTitle())
-                .content(postDTO.getContent())
-                .category(postDTO.getCategory())
-                .member(postDTO.getMember())
-                .build();
+    public static PostDTO fromEntity(Post post) {
+        return new PostDTO(
+                post.getTitle(),
+                post.getContent(),
+                post.getCategory(),
+                MemberDTO.fromEntity(post.getMember())
+        );
     }
 
 }
