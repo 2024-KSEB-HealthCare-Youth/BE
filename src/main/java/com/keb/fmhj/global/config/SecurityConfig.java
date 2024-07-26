@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -35,10 +36,10 @@ public class SecurityConfig {
         this.memberRepository = memberRepository;
     }
 
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return web -> web.ignoring().anyRequest();
-//    }
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().anyRequest();
+    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -63,11 +64,7 @@ public class SecurityConfig {
 
                                 CorsConfiguration configuration = new CorsConfiguration();
 
-                                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8080"));
-                                configuration.setAllowedOrigins(Collections.singletonList("http://52.79.103.61:3000"));
-                                configuration.setAllowedOrigins(Collections.singletonList("http://52.79.103.61:8080"));
-                                configuration.setAllowedMethods(Collections.singletonList("*"));
+                                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080", "http://52.79.103.61:3000", "http://52.79.103.61:8080"));configuration.setAllowedMethods(Collections.singletonList("*"));
                                 configuration.setAllowCredentials(true);
                                 configuration.setAllowedHeaders(Collections.singletonList("*"));
                                 configuration.setMaxAge(3600L);
@@ -87,11 +84,18 @@ public class SecurityConfig {
         http
                 .httpBasic((auth) -> auth.disable());
 
+        // 개발 test 단계에 사용할 api 접근 권한
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/members/join", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
-                        .permitAll()
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated());
+
+//        http
+//                .authorizeHttpRequests((auth) -> auth
+//                        .requestMatchers("/login", "/", "/members/join",
+//                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
+//                        .permitAll()
+//                        .anyRequest().authenticated());
 
         http
                 .addFilterBefore(new JWTFilter(jwtUtil, memberRepository), LoginFilter.class);
