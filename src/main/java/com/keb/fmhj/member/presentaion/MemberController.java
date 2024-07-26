@@ -4,13 +4,14 @@ import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
 import com.keb.fmhj.global.response.ApiResponse;
 import com.keb.fmhj.member.domain.Member;
+import com.keb.fmhj.member.domain.dto.request.MypageReqeustDto;
 import com.keb.fmhj.member.domain.dto.request.SignUpDto;
 import com.keb.fmhj.member.domain.dto.request.UpdateMemberDto;
 import com.keb.fmhj.member.domain.dto.response.MemberDetailDto;
+import com.keb.fmhj.member.domain.dto.response.MypageResponseDto;
 import com.keb.fmhj.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -70,5 +71,12 @@ public class MemberController {
     public ApiResponse<Void> deleteMember(@PathVariable("memberId") String loginId) {
         memberService.deleteMember(loginId);
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
+    }
+
+    //마이페이지 조회
+    @GetMapping
+    public ApiResponse<MypageResponseDto> getMypage(@RequestBody MypageReqeustDto mypageReqeustDto){
+
+        return new ApiResponse<>(memberService.getMypage(mypageReqeustDto));
     }
 }
