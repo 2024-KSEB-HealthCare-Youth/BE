@@ -76,7 +76,7 @@ public class MemberController {
     }
 
     //마이페이지 조회
-    @GetMapping("/mypage")
+    @PostMapping("/mypage")
     public ApiResponse<MypageResponseDto> getMypage(@RequestBody MypageReqeustDto mypageReqeustDto){
 
         return new ApiResponse<>(memberService.getMypage(mypageReqeustDto));

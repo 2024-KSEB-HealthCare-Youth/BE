@@ -24,7 +24,7 @@ public class ResultController {
     }
 
     @GetMapping("/{resultId}")
-    public ApiResponse<?> getResultDetail(@PathVariable Long resultId){
+    public ApiResponse<?> getResultDetail(@PathVariable("resultId") Long resultId){
         return new ApiResponse<>(resultService.getResultDetail(resultId));
     }
 }
