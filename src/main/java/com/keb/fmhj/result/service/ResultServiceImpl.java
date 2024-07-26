@@ -1,10 +1,10 @@
 package com.keb.fmhj.result.service;
 
-import com.keb.fmhj.global.exception.ErrorCode;
-import com.keb.fmhj.global.response.ApiResponse;
+import com.keb.fmhj.member.domain.Member;
+import com.keb.fmhj.member.domain.repository.MemberRepository;
 import com.keb.fmhj.result.domain.Result;
 import com.keb.fmhj.result.domain.repository.ResultRepository;
-import com.keb.fmhj.result.domain.response.ResultDetail;
+import com.keb.fmhj.result.domain.response.LastResultDetail;
 import com.keb.fmhj.result.domain.response.ResultList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,35 +19,18 @@ import java.util.List;
 public class ResultServiceImpl implements ResultService {
 
     private final ResultRepository resultRepository;
+    private final MemberRepository memberRepository;
 
+    //내가 진단했던 목록을 날짜별로 조회
     @Override
-    public ApiResponse<?> getResultDetail(Long memberId, Long resultId) {
-        //memberId가 없는 경우, resultId가 없는 경우
-        Result result = resultRepository.findByMemberIdAndId(memberId, resultId);
-
-        if(result == null){
-            return new ApiResponse<>(ErrorCode.INVALID_REQUEST);
-        }
-
-        ResultDetail resultDetail = ResultDetail.builder()
-                .memberId(memberId)
-                .resultId(resultId)
-                .faceImage(result.getFaceImage())
-                .details(result.getDetails())
-                .resultImage(result.getResultImage())
-                .build();
-
-        return new ApiResponse<>(resultDetail);
-    }
-
-    @Override
-    public ApiResponse<?> getResultList(Long memberId) {
+    public List<ResultList> getResultList() {
+        Member member = memberRepository.findById(1l).orElseThrow();
         //해당 멤버가 없는 경우 -> 로그인 되어있지 않은 사용자
-        List<Result> results = resultRepository.findAllByMemberId(memberId);
-
+        List<Result> results = resultRepository.findAllByMemberId(member.getId());
+/*
         if(results.isEmpty()){
             return new ApiResponse<>(ErrorCode.INVALID_REQUEST);
-        }
+        }*/
 
         List<ResultList> resultList = results.stream().map(result -> {
                     return ResultList.builder()
@@ -56,7 +39,33 @@ public class ResultServiceImpl implements ResultService {
                             .build();
                 })
                 .toList();
-        return new ApiResponse<>(resultList);
+
+        return resultList;
+    }
+
+    //과거 진단 결과 조회
+    @Override
+    public LastResultDetail getResultDetail(Long resultId) {
+
+        Member member = memberRepository.findById(1l).orElseThrow();
+
+        //memberId가 없는 경우, resultId가 없는 경우
+        Result result = resultRepository.findByMemberIdAndId(member.getId(), resultId);
+
+        if(result == null){
+            // return new ApiResponse<>(ErrorCode.INVALID_REQUEST);
+        }
+
+        LastResultDetail resultDetail = LastResultDetail.builder()
+                .resultId(resultId)
+                .memberId(member.getId())
+                .resultImage(result.getResultImage())
+                .faceImage(result.getFaceImage())
+                .details(result.getDetails())
+                .resultDate(result.getCreatedAt())
+                .build();
+
+        return resultDetail;
     }
 
 }

@@ -4,15 +4,14 @@ import com.keb.fmhj.global.BaseTimeEntity;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.resultItem.domain.ResultItem;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "result")
 public class Result extends BaseTimeEntity {
@@ -21,6 +20,14 @@ public class Result extends BaseTimeEntity {
     @Column(name = "result_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private AdvancedSkinType advancedSkinType;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private BasicSkinType basicSkinType;
 
     @Column(nullable = false)
     private String resultImage;

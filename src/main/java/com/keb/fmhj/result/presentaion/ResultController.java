@@ -1,9 +1,9 @@
 package com.keb.fmhj.result.presentaion;
 
 
+import com.keb.fmhj.global.response.ApiResponse;
 import com.keb.fmhj.result.service.ResultService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +19,12 @@ public class ResultController {
 
     //임시매개변수-> 멤버 아이디
     @GetMapping("/lists")
-    public ResponseEntity<?> getResultList(Long memberId){
-        return ResponseEntity.ok().body(resultService.getResultList(memberId));
+    public ApiResponse<?> getResultList(){
+        return new ApiResponse<>(resultService.getResultList());
     }
 
     @GetMapping("/{resultId}")
-    public ResponseEntity<?> getResultDetail(Long memberId, @PathVariable Long resultId){
-        return ResponseEntity.ok().body(resultService.getResultDetail(memberId, resultId));
+    public ApiResponse<?> getResultDetail(@PathVariable Long resultId){
+        return new ApiResponse<>(resultService.getResultDetail(resultId));
     }
 }
