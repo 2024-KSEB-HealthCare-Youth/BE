@@ -1,7 +1,5 @@
 package com.keb.fmhj.result.domain.response;
 
-import com.keb.fmhj.result.domain.AdvancedSkinType;
-import com.keb.fmhj.result.domain.BasicSkinType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

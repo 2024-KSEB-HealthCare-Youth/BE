@@ -1,7 +1,5 @@
 package com.keb.fmhj.result.service;
 
-import com.keb.fmhj.global.exception.ErrorCode;
-import com.keb.fmhj.global.response.ApiResponse;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
 import com.keb.fmhj.result.domain.Result;

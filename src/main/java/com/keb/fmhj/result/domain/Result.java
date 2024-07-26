@@ -1,7 +1,6 @@
 package com.keb.fmhj.result.domain;
 
 import com.keb.fmhj.global.BaseTimeEntity;
-import com.keb.fmhj.member.domain.Gender;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.resultItem.domain.ResultItem;
 import jakarta.persistence.*;
