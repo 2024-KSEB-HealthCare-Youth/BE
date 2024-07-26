@@ -36,10 +36,10 @@ public class SecurityConfig {
         this.memberRepository = memberRepository;
     }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().anyRequest();
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return web -> web.ignoring().anyRequest();
+//    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
