@@ -1,6 +1,5 @@
 package com.keb.fmhj.auth.domain;
 
-
 import com.keb.fmhj.member.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
