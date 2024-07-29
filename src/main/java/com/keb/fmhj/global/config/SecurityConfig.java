@@ -1,7 +1,9 @@
 package com.keb.fmhj.global.config;
 
+import com.keb.fmhj.auth.filter.CustomLogoutFilter;
 import com.keb.fmhj.auth.filter.JWTFilter;
 import com.keb.fmhj.auth.filter.LoginFilter;
+import com.keb.fmhj.auth.repository.RefreshRepository;
 import com.keb.fmhj.auth.utils.JWTUtil;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,11 +13,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -29,11 +31,13 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final MemberRepository memberRepository;
+    private final RefreshRepository refreshRepository;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, MemberRepository memberRepository) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, MemberRepository memberRepository, RefreshRepository refreshRepository) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.memberRepository = memberRepository;
+        this.refreshRepository = refreshRepository;
     }
 
 //    @Bean
@@ -93,16 +97,17 @@ public class SecurityConfig {
 //        http
 //                .authorizeHttpRequests((auth) -> auth
 //                        .requestMatchers("/login", "/", "/members/join",
-//                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
+//                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**"
+//                                "/reissue")
 //                        .permitAll()
 //                        .anyRequest().authenticated());
 
         http
                 .addFilterBefore(new JWTFilter(jwtUtil, memberRepository), LoginFilter.class);
-
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
+        http
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -110,4 +115,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
