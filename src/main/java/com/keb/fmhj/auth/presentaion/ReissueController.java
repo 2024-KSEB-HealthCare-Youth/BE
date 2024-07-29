@@ -4,6 +4,7 @@ import com.keb.fmhj.auth.domain.RefreshEntity;
 import com.keb.fmhj.auth.repository.RefreshRepository;
 import com.keb.fmhj.auth.utils.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,9 +28,14 @@ public class ReissueController {
     }
 
     @PostMapping("/reissue")
+    @Operation(
+            summary = "토큰 재발급 API",
+            description = "리프레시 토큰의 유효성을 검증, " +
+                    "유효한 경우 새로운 액세스 토큰과 리프레시 토큰을 발급 / 만료된 리프레시 토큰이거나 DB에 존재하지 않는 경우 에러 반환."
+    )
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
-        //get refresh token
+        // refresh token 얻기
         String refresh = null;
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
@@ -42,16 +48,14 @@ public class ReissueController {
 
         if (refresh == null) {
 
-            //response status code
             return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
         }
 
-        //expired check
+        // 만료된지 체크
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
 
-            //response status code
             return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
         }
 
@@ -60,30 +64,27 @@ public class ReissueController {
 
         if (!category.equals("refresh")) {
 
-            //response status code
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
-        //DB에 저장되어 있는지 확인
+        // DB에 저장되어 있는지 확인
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if (!isExist) {
 
-            //response body
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
 
-        //make new JWT
+        // make new JWT
         String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
         String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
 
-        //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
+        // Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
         refreshRepository.deleteByRefresh(refresh);
         addRefreshEntity(username, newRefresh, 86400000L);
 
-        //response
         response.setHeader("access", newAccess);
         response.addCookie(createCookie("refresh", newRefresh));
 
