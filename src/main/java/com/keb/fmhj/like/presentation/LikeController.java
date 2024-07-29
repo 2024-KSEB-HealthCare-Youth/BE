@@ -1,4 +1,4 @@
-package com.keb.fmhj.like.presentaion;
+package com.keb.fmhj.like.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;

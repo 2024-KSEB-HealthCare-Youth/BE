@@ -1,4 +1,4 @@
-package com.keb.fmhj.member.presentaion;
+package com.keb.fmhj.member.presentation;
 
 import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
