@@ -4,14 +4,14 @@ import com.keb.fmhj.global.BaseTimeEntity;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.post.domain.Post;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "comment")
 public class Comment extends BaseTimeEntity {
 
