@@ -35,7 +35,8 @@ public class Post extends BaseTimeEntity {
     private Member member;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments= new ArrayList<>();
+    @Builder.Default
+    private List<Comment> comments = new ArrayList<>();
 
     @Column
     private Long likeCount;
