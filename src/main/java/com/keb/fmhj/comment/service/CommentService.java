@@ -103,7 +103,7 @@ public class CommentService {
 
     // 댓글이 해당 게시글에 속하는지 검증
     private void ensureCommentBelongsToPost(Comment comment, Long postId) {
-        if(!postId.equals(comment.getPost().getId())) {
+        if(!postId.equals(comment.getPost().getPostId())) {
             throw YouthException.from(ErrorCode.POST_NOT_FOUND);
         }
     }

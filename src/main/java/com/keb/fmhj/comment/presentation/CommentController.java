@@ -1,5 +1,6 @@
 package com.keb.fmhj.comment.presentation;
 
+import com.keb.fmhj.auth.utils.AccessTokenUtils;
 import com.keb.fmhj.comment.domain.dto.request.AddCommentDto;
 import com.keb.fmhj.comment.domain.dto.request.UpdateCommentDto;
 import com.keb.fmhj.comment.domain.dto.response.CommentDetailDto;
@@ -8,6 +9,7 @@ import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +26,10 @@ public class CommentController {
 
     @PostMapping("/{postId}")
     @Operation(summary = "댓글 등록 API", description = "새로운 댓글을 등록합니다.")
-    public ApiResponse<Void> createComment(@PathVariable Long postId,
-                                           @RequestBody AddCommentDto addDto) {
+    public ApiResponse<Void> createComment(@Valid @RequestBody AddCommentDto addDto,
+                                           @PathVariable Long postId) {
 
-        String loginId = SecurityContextHolder.getContext().getAuthentication().getName();
+        String loginId = AccessTokenUtils.isPermission();
         commentService.createComment(addDto, postId, loginId);
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }

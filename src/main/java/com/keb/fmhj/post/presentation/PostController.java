@@ -1,13 +1,16 @@
 package com.keb.fmhj.post.presentation;
 
-import com.keb.fmhj.post.domain.Post;
-import com.keb.fmhj.post.domain.dto.request.PostDTO;
+import com.keb.fmhj.auth.utils.AccessTokenUtils;
+import com.keb.fmhj.global.exception.ErrorCode;
+import com.keb.fmhj.global.response.ApiResponse;
+import com.keb.fmhj.post.domain.dto.request.AddPostDto;
+import com.keb.fmhj.post.domain.dto.request.UpdatePostDto;
+import com.keb.fmhj.post.domain.dto.response.PostDetailDto;
 import com.keb.fmhj.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,36 +25,46 @@ public class PostController {
 
     @PostMapping
     @Operation(summary = "게시글 등록 API", description = "게시글을 등록합니다.")
-    public ResponseEntity<Post> createPost(@Valid @RequestBody PostDTO postDTO, @RequestParam("loginId") String loginId) {
-        Post savedPost = postService.savePost(postDTO, loginId);
-        return ResponseEntity.ok(savedPost);
+    public ApiResponse<Void> createPost(@Validated @RequestBody AddPostDto addPostDto) {
+
+        String loginId = AccessTokenUtils.isPermission();
+        postService.createPost(addPostDto, loginId);
+        return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 
     @GetMapping
     @Operation(summary = "전체 게시글 조회 API", description = "전체 게시글을 조회합니다.")
-    public ResponseEntity<List<PostDTO>> getAllPosts() {
-        List<PostDTO> posts = postService.getAllPosts();
-        return ResponseEntity.ok(posts);
+    public ApiResponse<PostDetailDto> getAllPosts() {
+
+        List<PostDetailDto> posts = postService.getAllPosts();
+        return new ApiResponse<>(posts);
     }
 
-    @GetMapping("/post")
-    @Operation(summary = "단일 게시글 조회 API", description = "회원이 작성한 게시글에 대해 조회합니다.")
-    public ResponseEntity<List<PostDTO>> getPostByLoginId(@RequestParam("loginId") String loginId) {
-        List<PostDTO> posts = postService.getPostByLoginId(loginId);
-        return ResponseEntity.ok(posts);
+    @GetMapping("/me")
+    @Operation(summary = "내 게시글들 조회 API", description = "내가 작성한 게시글들에 대해 조회합니다.")
+    public ApiResponse<PostDetailDto> getMemberPosts() {
+
+        String loginId = AccessTokenUtils.isPermission();
+        List<PostDetailDto> posts = postService.getMemberPost(loginId);
+        return new ApiResponse<>(posts);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/me")
     @Operation(summary = "게시글 수정 API", description = "게시글을 수정합니다.")
-    public ResponseEntity<PostDTO> updatePost(@PathVariable("id") Long id, @RequestBody PostDTO postDTO, @RequestParam("loginId") String loginId) {
-        PostDTO updatedPost = postService.updatePost(id, postDTO, loginId);
-        return ResponseEntity.ok(updatedPost);
+    public ApiResponse<PostDetailDto> updatePost(@RequestParam Long postId,
+                                                 @Validated @RequestBody UpdatePostDto updatePostDto) {
+
+        String loginId = AccessTokenUtils.isPermission();
+        postService.updatePost(postId, loginId, updatePostDto);
+        return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/me")
     @Operation(summary = "게시글 삭제 API", description = "게시글을 삭제합니다.")
-    public ResponseEntity<Void> deletePost(@PathVariable("id") Long id, @RequestParam("loginId") String loginId) {
-        postService.deletePost(id, loginId);
-        return ResponseEntity.noContent().build();
+    public ApiResponse<PostDetailDto> deletePost(@RequestParam Long postId) {
+
+        String loginId = AccessTokenUtils.isPermission();
+        postService.deletePost(postId, loginId);
+        return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 }

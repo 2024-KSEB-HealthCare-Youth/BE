@@ -21,15 +21,15 @@ public class SwaggerConfig {
                                 .scheme("bearer")
                                 .bearerFormat("JWT")
                                 .in(SecurityScheme.In.HEADER)
-                                .description("Enter JWT token only")))
+                                .description("access token을 넣어주세요!")))
                 .info(apiInfo())
                 .addSecurityItem(new SecurityRequirement().addList("bearer-jwt"));
     }
 
     private Info apiInfo() {
         return new Info()
-                .title("Spring Boot REST API Specifications")
-                .description("API documentation with JWT support")
+                .title("Youth REST API Swagger Test Page")
+                .description("made by FMHJ(Face Manager for Happy and Joy)")
                 .version("1.0.0");
     }
 }

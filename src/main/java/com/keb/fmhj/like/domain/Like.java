@@ -1,18 +1,18 @@
 package com.keb.fmhj.like.domain;
 
+import com.keb.fmhj.global.BaseTimeEntity;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.post.domain.Post;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter @Setter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "like")
-public class Like {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "likes")
+public class Like extends BaseTimeEntity {
 
     @Id
     @Column(name = "like_id", nullable = false)

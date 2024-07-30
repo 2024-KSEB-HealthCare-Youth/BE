@@ -56,7 +56,6 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Result> results;
 
-
     public void update(String name, String nickName, String phoneNumber, String email, String profileImage) {
         this.name = name;
         this.nickName = nickName;

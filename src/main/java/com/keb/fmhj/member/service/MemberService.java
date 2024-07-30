@@ -145,7 +145,7 @@ public class MemberService {
 
         String loginId = joinDto.getLoginId();
         if (memberRepository.existsByLoginId(loginId)) {
-            throw YouthException.from(ErrorCode.MEMBER_NOT_FOUND);
+            throw YouthException.from(ErrorCode.DUPLICATE_MEMBER_LOGIN_ID);
         }
     }
 }
