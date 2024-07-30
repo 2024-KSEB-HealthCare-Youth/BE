@@ -50,7 +50,6 @@ public class Post extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-
 //    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Like> likes = new ArrayList<>();
 }
