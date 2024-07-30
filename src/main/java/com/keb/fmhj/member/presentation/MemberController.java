@@ -14,13 +14,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
@@ -32,24 +32,16 @@ public class MemberController {
     @PostMapping("/join")
     @Operation(summary = "회원 등록 API", description = "회원 등록을 합니다.")
     public ApiResponse<Member> join(@Validated @RequestBody SignUpDto memberJoinRequest, Errors errors) {
+
         validateRequest(errors);
         memberService.join(memberJoinRequest);
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 
-    // 유효성 검증
-    private void validateRequest(Errors errors) {
-        if (errors.hasErrors()) {
-            errors.getFieldErrors().forEach(error -> {
-                String errorMessage = error.getDefaultMessage();
-                throw YouthException.from(ErrorCode.INVALID_REQUEST);
-            });
-        }
-    }
-
     @GetMapping("/{memberId}")
     @Operation(summary = "단일 회원 상세 조회 API", description = "한명의 회원을 조회합니다.")
     public ApiResponse<MemberDetailDto> getMemberDetail(@PathVariable(name = "memberId") String loginId) {
+
         MemberDetailDto memberDetail = memberService.getMemberDetails(loginId);
         return new ApiResponse<>(memberDetail);
     }
@@ -57,6 +49,7 @@ public class MemberController {
     @GetMapping
     @Operation(summary = "전체 회원 상세 조회 API", description = "전체 회원을 조회합니다.")
     public ApiResponse<MemberDetailDto> getAllMemberDetails() {
+
         List<MemberDetailDto> members = memberService.getAllMemberDetails();
         return new ApiResponse<>(members);
     }
@@ -74,14 +67,26 @@ public class MemberController {
     @DeleteMapping("/{memberId}")
     @Operation(summary = "회원 삭제 API", description = "회원을 삭제합니다.")
     public ApiResponse<Void> deleteMember(@PathVariable("memberId") String loginId) {
+
         memberService.deleteMember(loginId);
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 
     //마이페이지 조회
     @PostMapping("/mypage")
+    @Operation(summary = "마이페이지 API", description = "마이페이지를 불러옵니다.")
     public ApiResponse<MypageResponseDto> getMypage(@RequestBody MypageReqeustDto mypageReqeustDto){
 
         return new ApiResponse<>(memberService.getMypage(mypageReqeustDto));
+    }
+
+    // 유효성 검증
+    private void validateRequest(Errors errors) {
+        if (errors.hasErrors()) {
+            errors.getFieldErrors().forEach(error -> {
+                String errorMessage = error.getDefaultMessage();
+                throw YouthException.from(ErrorCode.INVALID_REQUEST);
+            });
+        }
     }
 }
