@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -68,7 +67,9 @@ public class CommentService {
         Comment comment = ensureCommentExists(commentId);
         ensureCommentBelongsToPost(comment, postId);
         validateCommentOwner(comment, loginId);
+
         comment.setContent(updateDto.getContent());
+
         commentRepository.save(comment);
     }
 
@@ -78,6 +79,7 @@ public class CommentService {
 
         Comment comment = ensureCommentExists(commentId);
         validateCommentOwner(comment, loginId);
+
         commentRepository.delete(comment);
     }
 

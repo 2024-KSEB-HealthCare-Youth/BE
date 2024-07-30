@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/comments")
 @RequiredArgsConstructor
 @Tag(name = "Comment", description = "댓글 관련 API")
 public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/comments/{postId}")
+    @PostMapping("/{postId}")
     @Operation(summary = "댓글 등록 API", description = "새로운 댓글을 등록합니다.")
     public ApiResponse<Void> createComment(@PathVariable Long postId,
                                            @RequestBody AddCommentDto addDto) {
@@ -32,7 +32,7 @@ public class CommentController {
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 
-    @GetMapping("/comments/{postId}/{commentId}")
+    @GetMapping("/{postId}/{commentId}")
     @Operation(summary = "단일 댓글 상세 조회 API", description = "하나의 댓글을 조회합니다.")
     public ApiResponse<CommentDetailDto> getOneComment(@PathVariable Long postId,
                                                        @PathVariable Long commentId) {
@@ -41,7 +41,7 @@ public class CommentController {
         return new ApiResponse<>(commentDetail);
     }
 
-    @GetMapping("/comments/{postId}")
+    @GetMapping("/{postId}")
     @Operation(summary = "전체 댓글 조회 API", description = "해당 게시글의 모든 댓글들을 조회합니다.")
     public ApiResponse<CommentDetailDto> getAllComments(@PathVariable Long postId) {
 
@@ -49,7 +49,7 @@ public class CommentController {
         return new ApiResponse<>(comments);
     }
 
-    @PutMapping("/comments/{postId}/{commentId}")
+    @PutMapping("/{postId}/{commentId}")
     @Operation(summary = "댓글 수정 API", description = "특정 댓글의 내용을 수정합니다.")
     public ApiResponse<Void> updateComment(@PathVariable Long postId,
                                            @PathVariable Long commentId,
@@ -60,7 +60,7 @@ public class CommentController {
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 
-    @DeleteMapping("/comments/{postId}/{commentId}")
+    @DeleteMapping("/{postId}/{commentId}")
     @Operation(summary = "댓글 삭제 API", description = "댓글을 삭제합니다.")
     public ApiResponse<Void> deleteComment(@PathVariable Long postId,
                                            @PathVariable Long commentId) {
