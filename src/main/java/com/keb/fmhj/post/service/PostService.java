@@ -5,7 +5,9 @@ import com.keb.fmhj.global.exception.YouthException;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
 import com.keb.fmhj.post.domain.Post;
-import com.keb.fmhj.post.domain.dto.request.PostDTO;
+import com.keb.fmhj.post.domain.dto.request.AddPostDto;
+import com.keb.fmhj.post.domain.dto.request.UpdatePostDto;
+import com.keb.fmhj.post.domain.dto.response.PostDetailDto;
 import com.keb.fmhj.post.domain.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,78 +23,81 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
-    // 등록
-    public Post savePost(PostDTO postDTO, String loginId) {
-        Member member = memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> YouthException.from(ErrorCode.MEMBER_NOT_FOUND));
+    // 게시글 등록
+    @Transactional
+    public void createPost(AddPostDto addPostDto, String loginId) {
 
-        Post post = Post.builder()
-                .title(postDTO.getTitle())
-                .content(postDTO.getContent())
-                .category(postDTO.getCategory())
-                .member(member)
+        Member member = ensureMemberExists(loginId);
+
+        Post addPost = Post.builder()
+                .title(addPostDto.getTitle())
+                .content(addPostDto.getContent())
+                .category(addPostDto.getCategory())
                 .build();
-        return postRepository.save(post);
+
+        postRepository.save(addPost);
+    }
+
+    // 회원이 작성한 게시글들 조회
+    @Transactional(readOnly = true)
+    public List<PostDetailDto> getMemberPost(String loginId) {
+        return postRepository
+                .findAllByMember_loginId(loginId)
+                .stream()
+                .map((Object post) -> PostDetailDto.toDto((Post) post))
+                .collect(Collectors.toList());
     }
 
     // 전체 게시글 조회
     @Transactional
-    public List<PostDTO> getAllPosts() {
-        return postRepository.findAll().stream()
-                .map(this::convertToDto)
+    public List<PostDetailDto> getAllPosts() {
+        return postRepository
+                .findAll()
+                .stream()
+                .map(PostDetailDto::toDto)
                 .collect(Collectors.toList());
-    }
-
-    // 단일 게시글 조회
-    @Transactional
-    public List<PostDTO> getPostByLoginId(String loginId) {
-        return postRepository.findByMember_LoginId(loginId).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-
     }
 
     // 게시글 수정
     @Transactional
-    public PostDTO updatePost(Long id, PostDTO postDTO, String loginId) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> YouthException.from(ErrorCode.POST_NOT_FOUND));
+    public void updatePost(Long postId, String loginId, UpdatePostDto updateDto) {
 
-        // 로그인한 사용자가 이 게시글의 작성자인지 확인
-        if (!post.getMember().getLoginId().equals(loginId)) {
-            throw YouthException.from(ErrorCode.MEMBER_NOT_AUTHORIZED);
-        }
+        Post post = ensurePostExists(postId);
+        validatePostOwner(post, loginId);
 
-        post.setTitle(postDTO.getTitle());
-        post.setContent(postDTO.getContent());
-        post.setCategory(postDTO.getCategory());
+        post.setTitle(updateDto.getTitle());
+        post.setContent(updateDto.getContent());
+        post.setCategory(updateDto.getCategory());
 
-        Post updatedPost = postRepository.save(post);
-
-        // DTO로 변환하여 반환
-        return PostDTO.fromEntity(updatedPost);
+        postRepository.save(post);
     }
-
 
     // 게시글 삭제
     @Transactional
-    public void deletePost(Long id, String loginId) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> YouthException.from(ErrorCode.POST_NOT_FOUND));
+    public void deletePost(Long postId, String loginId) {
 
-        // 로그인한 사용자가 이 게시글의 작성자인지 확인
+        Post post = ensurePostExists(postId);
+        validatePostOwner(post, loginId);
+
+        postRepository.delete(post);
+    }
+
+    // 회원 존재 유무 검증
+    private Member ensureMemberExists(String loginId) {
+        return memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> YouthException.from(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    // 게시글 존재 유무 검증
+    private Post ensurePostExists(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> YouthException.from(ErrorCode.POST_NOT_FOUND));
+    }
+
+    // 게시글 작성자인지 검증
+    private void validatePostOwner(Post post, String loginId) {
         if (!post.getMember().getLoginId().equals(loginId)) {
             throw YouthException.from(ErrorCode.MEMBER_NOT_AUTHORIZED);
         }
-
-        postRepository.deleteById(id);
-    }
-
-    private PostDTO convertToDto(Post post) {
-        PostDTO postDTO = new PostDTO();
-        postDTO.setTitle(post.getTitle());
-        postDTO.setContent(post.getContent());
-        postDTO.setCategory(post.getCategory());
-        return postDTO;
     }
 }

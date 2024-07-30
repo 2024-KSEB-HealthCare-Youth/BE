@@ -2,8 +2,12 @@ package com.keb.fmhj.post.domain.repository;
 
 import com.keb.fmhj.post.domain.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findByMember_LoginId(String loginId);
+
+    Collection<Object> findAllByMember_loginId(String loginId);
 }
