@@ -9,12 +9,17 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
-        corsRegistry.addMapping("/**")
-                .allowedOrigins(
-                        "http://localhost:3000",
-                        "http://localhost:8080",
-                        "http://52.79.103.61:3000",
-                        "http://52.79.103.61:8080"
-                );
+        corsRegistry.addMapping("/**") // test용
+                .allowedOrigins("*")
+                .allowedMethods("*")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
+//                .allowedOrigins(
+//                        "http://localhost:3000",
+//                        "http://localhost:8080",
+//                        "http://52.79.103.61:3000",
+//                        "http://52.79.103.61:8080"
+//                );
     }
 }
