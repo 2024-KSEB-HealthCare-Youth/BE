@@ -2,7 +2,6 @@ package com.keb.fmhj.member.service;
 
 import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
-import com.keb.fmhj.global.response.ApiResponse;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.member.domain.dto.request.MypageReqeustDto;
 import com.keb.fmhj.member.domain.dto.request.SignUpDto;
@@ -12,7 +11,6 @@ import com.keb.fmhj.member.domain.dto.response.MypageResponseDto;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
 import com.keb.fmhj.result.domain.Result;
 import com.keb.fmhj.result.domain.repository.ResultRepository;
-import com.keb.fmhj.result.domain.response.LastResultDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,9 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
-@RequestMapping
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -35,9 +31,11 @@ public class MemberService {
     private final ResultRepository resultRepository;
 
     // 회원 등록
+    @Transactional
     public void join(SignUpDto signUpDtoDto) {
 
         validateExistMember(signUpDtoDto);
+
         Member joinMember = Member.builder()
                 .loginId(signUpDtoDto.getLoginId())
                 .password(bCryptPasswordEncoder.encode(signUpDtoDto.getPassword()))
@@ -50,43 +48,35 @@ public class MemberService {
                 .profileImage(signUpDtoDto.getProfileImage())
                 .isAdmin(signUpDtoDto.getIsAdmin())
                 .build();
+
         memberRepository.save(joinMember);
     }
 
-    // 회원 존재 유무
-    private void validateExistMember(SignUpDto joinDto) {
-        String loginId = joinDto.getLoginId();
-        if (memberRepository.existsByLoginId(loginId)) {
-            throw YouthException.from(ErrorCode.USER_NOT_FOUND);
-        }
-    }
-
-    // 단일 조회
+    // 단일 회원 조회
     @Transactional(readOnly = true)
     public MemberDetailDto getMemberDetails(String loginId) {
 
-        Optional<Member> targetMember = memberRepository.findByLoginId(loginId);
-
-        if (targetMember.isEmpty()) {
-            throw YouthException.from(ErrorCode.USER_NOT_FOUND);
-        }
-
-        Member findMember = targetMember.get();
-        return MemberDetailDto.toDto(findMember);
+        Member member = ensureMemberExists(loginId);
+        return MemberDetailDto.toDto(member);
     }
 
-    // 전체 조회
+    // 전체 회원 조회
+    @Transactional(readOnly = true)
     public List<MemberDetailDto> getAllMemberDetails() {
-        List<Member> members = memberRepository.findAll();
-        return members.stream()
+
+        return memberRepository
+                .findAll()
+                .stream()
                 .map(MemberDetailDto::toDto)
                 .collect(Collectors.toList());
     }
 
+    // 회원 수정
     @Transactional
     public void updateMember(String loginId, UpdateMemberDto updateDto) {
-        Member member = memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> YouthException.from(ErrorCode.USER_NOT_FOUND));
+
+        Member member = ensureMemberExists(loginId);
+        validateMemberOwner(member, loginId);
 
         member.setName(updateDto.getName());
         member.setNickName(updateDto.getNickName());
@@ -97,27 +87,33 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    // 회원 삭제
     @Transactional
     public void deleteMember(String loginId) {
-        if (!memberRepository.existsByLoginId(loginId)) {
-            throw YouthException.from(ErrorCode.USER_NOT_FOUND);
-        }
-        memberRepository.deleteByLoginId(loginId);
+
+        Member member = ensureMemberExists(loginId);
+        validateMemberOwner(member, loginId);
+
+        memberRepository.delete(member);
     }
 
-    public MypageResponseDto getMypage(MypageReqeustDto mypageReqeustDto){
-        Member member = memberRepository.findById(1l).orElseThrow(() -> YouthException.from(ErrorCode.INVALID_REQUEST));
+    // 마이페이지
+    @Transactional
+    public MypageResponseDto getMypage(MypageReqeustDto reqeustDto){
+
+        Member member = memberRepository.findById(1L).orElseThrow(() -> YouthException.from(ErrorCode.INVALID_REQUEST));
+
         Result result = Result.builder()
                 .member(member)
-                .advancedSkinType(mypageReqeustDto.getAdvancedSkinType())
-                .basicSkinType(mypageReqeustDto.getBasicSkinType())
-                .resultImage(mypageReqeustDto.getResultImage())
-                .faceImage(mypageReqeustDto.getFaceImage())
+                .advancedSkinType(reqeustDto.getAdvancedSkinType())
+                .basicSkinType(reqeustDto.getBasicSkinType())
+                .resultImage(reqeustDto.getResultImage())
+                .faceImage(reqeustDto.getFaceImage())
                 .build();
 
         resultRepository.save(result);
 
-        MypageResponseDto mypageResponseDto = MypageResponseDto.builder()
+        return MypageResponseDto.builder()
                 .name(member.getName())
                 .nickname(member.getName())
                 .gender(member.getGender())
@@ -129,8 +125,27 @@ public class MemberService {
                 .basicSkinType(result.getBasicSkinType())
                 .advancedSkinType(result.getAdvancedSkinType())
                 .build();
-
-        return mypageResponseDto;
     }
 
+    // 회원 존재 유무 검증
+    private Member ensureMemberExists(String loginId) {
+        return memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> YouthException.from(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    // 회원 본인인지 검증
+    private void validateMemberOwner(Member member, String loginId) {
+        if(member.getLoginId().equals(loginId)){
+            throw YouthException.from(ErrorCode.MEMBER_NOT_AUTHENTICATED);
+        }
+    }
+
+    // 회원 존재 유무 검증
+    private void validateExistMember(SignUpDto joinDto) {
+
+        String loginId = joinDto.getLoginId();
+        if (memberRepository.existsByLoginId(loginId)) {
+            throw YouthException.from(ErrorCode.MEMBER_NOT_FOUND);
+        }
+    }
 }

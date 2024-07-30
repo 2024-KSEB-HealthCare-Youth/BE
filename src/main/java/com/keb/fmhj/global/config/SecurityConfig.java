@@ -68,7 +68,9 @@ public class SecurityConfig {
 
                                 CorsConfiguration configuration = new CorsConfiguration();
 
-                                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080", "http://52.79.103.61:3000", "http://52.79.103.61:8080"));configuration.setAllowedMethods(Collections.singletonList("*"));
+                                // configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080", "http://52.79.103.61:3000", "http://52.79.103.61:8080"));
+                                configuration.setAllowedOrigins(Collections.singletonList("*")); // test용
+                                configuration.setAllowedMethods(Collections.singletonList("*"));
                                 configuration.setAllowCredentials(true);
                                 configuration.setAllowedHeaders(Collections.singletonList("*"));
                                 configuration.setMaxAge(3600L);

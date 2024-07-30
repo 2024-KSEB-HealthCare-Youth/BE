@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
 
         Member member = memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> YouthException.from(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> YouthException.from(ErrorCode.MEMBER_NOT_FOUND));
 
         return new CustomUserDetails(member);
     }

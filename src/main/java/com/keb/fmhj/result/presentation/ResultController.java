@@ -1,4 +1,4 @@
-package com.keb.fmhj.result.presentaion;
+package com.keb.fmhj.result.presentation;
 
 
 import com.keb.fmhj.global.response.ApiResponse;

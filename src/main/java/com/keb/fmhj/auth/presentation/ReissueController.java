@@ -1,4 +1,4 @@
-package com.keb.fmhj.auth.presentaion;
+package com.keb.fmhj.auth.presentation;
 
 import com.keb.fmhj.auth.domain.RefreshEntity;
 import com.keb.fmhj.auth.repository.RefreshRepository;
@@ -97,7 +97,7 @@ public class ReissueController {
         cookie.setMaxAge(24*60*60);
         //cookie.setSecure(true);
         //cookie.setPath("/");
-        cookie.setHttpOnly(true);
+        // cookie.setHttpOnly(true);
 
         return cookie;
     }
