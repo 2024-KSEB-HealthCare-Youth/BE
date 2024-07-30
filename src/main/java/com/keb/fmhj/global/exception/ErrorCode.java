@@ -33,10 +33,13 @@ public enum ErrorCode {
     OPEN_ID_PROVIDER_NOT_RESPONSE(HttpStatus.INTERNAL_SERVER_ERROR, "OpenID 제공자 서버에 문제가 발생했습니다."),
 
     // post
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다"),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."),
 
     // comment
-    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다"),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다."),
+
+    // like
+    LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요한 게시글이 아닙니다."),
 
     // transaction
     TRANSACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 거래입니다."),
