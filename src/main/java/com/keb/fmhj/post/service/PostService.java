@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +24,7 @@ public class PostService {
     // 등록
     public Post savePost(PostDTO postDTO, String loginId) {
         Member member = memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> YouthException.from(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> YouthException.from(ErrorCode.MEMBER_NOT_FOUND));
 
         Post post = Post.builder()
                 .title(postDTO.getTitle())
@@ -61,7 +60,7 @@ public class PostService {
 
         // 로그인한 사용자가 이 게시글의 작성자인지 확인
         if (!post.getMember().getLoginId().equals(loginId)) {
-            throw YouthException.from(ErrorCode.USER_NOT_AUTHORIZED);
+            throw YouthException.from(ErrorCode.MEMBER_NOT_AUTHORIZED);
         }
 
         post.setTitle(postDTO.getTitle());
@@ -83,7 +82,7 @@ public class PostService {
 
         // 로그인한 사용자가 이 게시글의 작성자인지 확인
         if (!post.getMember().getLoginId().equals(loginId)) {
-            throw YouthException.from(ErrorCode.USER_NOT_AUTHORIZED);
+            throw YouthException.from(ErrorCode.MEMBER_NOT_AUTHORIZED);
         }
 
         postRepository.deleteById(id);
