@@ -13,7 +13,8 @@ public class CorsMvcConfig implements WebMvcConfigurer {
                 .allowedOrigins("*")
                 .allowedMethods("*")
                 .allowedHeaders("*")
-                .allowCredentials(true)
+                // .allowCredentials(true) CORS 정책상 all 허용 불가
+                .allowedOriginPatterns("*")
                 .maxAge(3600);
 //                .allowedOrigins(
 //                        "http://localhost:3000",
