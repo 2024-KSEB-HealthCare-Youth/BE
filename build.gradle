@@ -53,11 +53,11 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
+    // Dev tools for development efficiency
+    developmentOnly 'org.springframework.boot:spring-boot-configuration-processor'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
-
-
-//
 //tasks.named('test') {
-//	useJUnitPlatform()
+//    useJUnitPlatform()
 //}

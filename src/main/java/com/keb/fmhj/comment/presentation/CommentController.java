@@ -34,15 +34,6 @@ public class CommentController {
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 
-    @GetMapping("/{postId}/{commentId}")
-    @Operation(summary = "단일 댓글 상세 조회 API", description = "하나의 댓글을 조회합니다.")
-    public ApiResponse<CommentDetailDto> getOneComment(@PathVariable Long postId,
-                                                       @PathVariable Long commentId) {
-
-        CommentDetailDto commentDetail = commentService.getCommentDetails(commentId);
-        return new ApiResponse<>(commentDetail);
-    }
-
     @GetMapping("/{postId}")
     @Operation(summary = "전체 댓글 조회 API", description = "해당 게시글의 모든 댓글들을 조회합니다.")
     public ApiResponse<CommentDetailDto> getAllComments(@PathVariable Long postId) {

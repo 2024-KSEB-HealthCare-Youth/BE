@@ -21,6 +21,7 @@ public enum ErrorCode {
 
     // auth
     EXPIRED_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 로그인 토큰입니다."),
+    TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 토큰입니다."),
     INVALID_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "올바르지 않은 로그인 토큰입니다."),
     NOT_BEARER_TOKEN_TYPE(HttpStatus.UNAUTHORIZED, "Bearer 타입의 토큰이 아닙니다."),
     NEED_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "로그인이 필요한 서비스입니다."),
@@ -40,27 +41,6 @@ public enum ErrorCode {
 
     // like
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요한 게시글이 아닙니다."),
-
-    // transaction
-    TRANSACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 거래입니다."),
-    TRANSACTION_ALREADY_EXIST(HttpStatus.CONFLICT, "이미 존재하는 거래입니다."),
-    TRANSACTION_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "해당 거래에 권한이 없습니다."),
-    TRANSACTION_EXPIRED(HttpStatus.BAD_REQUEST, "거래 기간이 만료되었습니다."),
-    TRANSACTION_INVALID_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 거래 상태입니다."),
-    TRANSACTION_PAYMENT_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "결제 처리에 실패했습니다."),
-    TRANSACTION_SHIPPING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "배송 처리에 실패했습니다."),
-    TRANSACTION_CANCEL_NOT_ALLOWED(HttpStatus.FORBIDDEN, "거래를 취소할 수 없습니다."),
-    TRANSACTION_REFUND_NOT_ALLOWED(HttpStatus.FORBIDDEN, "환불을 처리할 수 없습니다."),
-    TRANSACTION_ITEM_NOT_RECEIVED(HttpStatus.BAD_REQUEST, "상품이 수령되지 않았습니다."),
-    TRANSACTION_ITEM_DAMAGED(HttpStatus.BAD_REQUEST, "상품이 손상되었습니다."),
-    TRANSACTION_INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "유효하지 않은 수량입니다."),
-    TRANSACTION_DUPLICATE_REQUEST(HttpStatus.CONFLICT, "중복된 거래 요청입니다."),
-    TRANSACTION_INVALID_PAYMENT_METHOD(HttpStatus.BAD_REQUEST, "유효하지 않은 결제 방법입니다."),
-    TRANSACTION_ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "배송 주소를 찾을 수 없습니다."),
-    TRANSACTION_DELIVERY_DELAYED(HttpStatus.INTERNAL_SERVER_ERROR, "배송이 지연되었습니다."),
-    TRANSACTION_SELLER_NOT_RESPONSIVE(HttpStatus.INTERNAL_SERVER_ERROR, "판매자가 응답하지 않습니다."),
-    TRANSACTION_BUYER_NOT_RESPONSIVE(HttpStatus.INTERNAL_SERVER_ERROR, "구매자가 응답하지 않습니다."),
-    TRANSACTION_INSUFFICIENT_FUNDS(HttpStatus.PAYMENT_REQUIRED, "잔액이 부족합니다."),
 
     // item
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 제품입니다."),

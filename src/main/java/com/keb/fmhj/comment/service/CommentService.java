@@ -35,8 +35,9 @@ public class CommentService {
 
         Comment addComment = Comment.builder()
                 .content(addDto.getContent())
-                .post(addDto.getPost())
-                .member(addDto.getMember())
+                .post(post)
+
+                .member(member)
                 .build();
 
         commentRepository.save(addComment);
@@ -51,10 +52,11 @@ public class CommentService {
     }
 
     // 전체 댓글 조회
+    @Transactional(readOnly = true)
     public List<CommentDetailDto> getAllCommentDetails(Long postId) {
 
         return commentRepository
-                .findByPostId(postId)
+                .findByPost_PostId(postId)
                 .stream()
                 .map((CommentDetailDto::toDto))
                 .collect(Collectors.toList());

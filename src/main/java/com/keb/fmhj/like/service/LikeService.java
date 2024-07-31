@@ -4,7 +4,6 @@ import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
 import com.keb.fmhj.like.domain.Like;
 import com.keb.fmhj.like.domain.repository.LikeRepository;
-import com.keb.fmhj.like.domain.request.LikeRequestDto;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
 import com.keb.fmhj.post.domain.Post;
@@ -23,7 +22,7 @@ public class LikeService {
 
     // 좋아요 등록
     @Transactional
-    public void addLike(String loginId, Long postId, LikeRequestDto likeDto) {
+    public void addLike(String loginId, Long postId) {
 
         Member member = ensureMemberExists(loginId);
         Post post = ensurePostExists(postId);
@@ -41,7 +40,7 @@ public class LikeService {
 
     // 좋아요 삭제
     @Transactional
-    public void deleteLike(String loginId, Long postId, LikeRequestDto likeDto) {
+    public void deleteLike(String loginId, Long postId) {
 
         Member member = ensureMemberExists(loginId);
         Post post = ensurePostExists(postId);

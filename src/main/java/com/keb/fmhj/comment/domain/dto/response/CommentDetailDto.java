@@ -1,24 +1,30 @@
 package com.keb.fmhj.comment.domain.dto.response;
 
 import com.keb.fmhj.comment.domain.Comment;
-import com.keb.fmhj.member.domain.Member;
-import com.keb.fmhj.post.domain.Post;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
 public class CommentDetailDto {
 
+    private Long postId;
+    private Long commentId;
+    private String nickname;
+    private String profileImage;
     private String content;
-    private Post post;
-    private Member member;
+    private LocalDateTime createdAt;
 
     public static CommentDetailDto toDto(Comment comment) {
         return CommentDetailDto.builder()
+                .postId(comment.getPost().getPostId())
+                .commentId(comment.getCommentId())
+                .nickname(comment.getMember().getNickName())
+                .profileImage(comment.getMember().getProfileImage())
                 .content(comment.getContent())
-                .post(comment.getPost())
-                .member(comment.getMember())
+                .createdAt(comment.getCreatedAt())
                 .build();
     }
 }
