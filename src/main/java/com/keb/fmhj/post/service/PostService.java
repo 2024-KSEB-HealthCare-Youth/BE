@@ -33,6 +33,7 @@ public class PostService {
                 .title(addPostDto.getTitle())
                 .content(addPostDto.getContent())
                 .category(addPostDto.getCategory())
+                .member(member)
                 .build();
 
         postRepository.save(addPost);
