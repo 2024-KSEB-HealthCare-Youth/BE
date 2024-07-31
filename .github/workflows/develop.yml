@@ -47,4 +47,4 @@ jobs:
             cat src/main/resources/application.yml
             ./gradlew clean build
             sudo fuser -k -n tcp 8080 || true
-            nohup java -jar build/libs/fmhj-0.0.1-SNAPSHOT.jar > output.log 2>&1 &
+            nohup java -jar ./build/libs/fmhj-0.0.1-SNAPSHOT.jar > output.log 2>&1 &
