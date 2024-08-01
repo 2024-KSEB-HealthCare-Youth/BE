@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,9 @@ public class PostService {
                 .content(addPostDto.getContent())
                 .category(addPostDto.getCategory())
                 .member(member)
+                .likeCount(0L)
+                .commentCount(0L)
+                .comments(new ArrayList<>())
                 .build();
 
         postRepository.save(addPost);

@@ -16,8 +16,12 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class AddCommentDto {
 
+    private String nickName;
+
     @NotNull(message = "내용을 입력해주세요!")
     private String content;
+
+    private String profileImage;
 
     public static Comment toEntity(AddCommentDto request){
         return Comment.builder()
