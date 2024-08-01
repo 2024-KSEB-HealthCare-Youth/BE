@@ -12,7 +12,7 @@ public class CommentDetailDto {
 
     private Long postId;
     private Long commentId;
-    private String nickname;
+    private String nickName;
     private String profileImage;
     private String content;
     private LocalDateTime createdAt;
@@ -21,7 +21,7 @@ public class CommentDetailDto {
         return CommentDetailDto.builder()
                 .postId(comment.getPost().getPostId())
                 .commentId(comment.getCommentId())
-                .nickname(comment.getMember().getNickName())
+                .nickName(comment.getMember().getNickName())
                 .profileImage(comment.getMember().getProfileImage())
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())

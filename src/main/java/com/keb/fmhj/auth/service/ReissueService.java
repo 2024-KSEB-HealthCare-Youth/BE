@@ -1,19 +1,18 @@
 package com.keb.fmhj.auth.service;
 
-import java.util.Optional;
-
 import com.keb.fmhj.auth.domain.RefreshEntity;
 import com.keb.fmhj.auth.repository.RefreshRepository;
 import com.keb.fmhj.auth.utils.JWTUtil;
 import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
-import org.springframework.http.ResponseCookie;
-import org.springframework.stereotype.Service;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class ReissueService {
         String loginId = validateAndGetUserEmail(refreshToken); // 추출한 토큰 검증 및 유저반환
         //토큰 생성
         String newAccess = jwtUtil.createJwt("access", loginId, 30 * 60 * 1000L);
-        String newRefresh = jwtUtil.createJwt("refresh", "fakeEmail", 24 * 60 * 60 * 1000L);
+        String newRefresh = jwtUtil.createJwt("refresh", "fakeLoginId", 24 * 60 * 60 * 1000L);
         //기존 리프레시 토큰 삭제
         refreshTokenRepository.deleteById(refreshToken);
         // 새로운 refresh 토큰 객체 생성 및 Redis 저장
@@ -87,5 +86,4 @@ public class ReissueService {
                 .maxAge(24 * 60 * 60)// 쿠키 유효기간 설정 (=refresh 토큰 만료주기)
                 .build();
     }
-
 }

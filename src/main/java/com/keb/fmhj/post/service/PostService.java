@@ -7,6 +7,7 @@ import com.keb.fmhj.member.domain.repository.MemberRepository;
 import com.keb.fmhj.post.domain.Post;
 import com.keb.fmhj.post.domain.dto.request.AddPostDto;
 import com.keb.fmhj.post.domain.dto.request.UpdatePostDto;
+import com.keb.fmhj.post.domain.dto.response.OnePostDetailDto;
 import com.keb.fmhj.post.domain.dto.response.PostDetailDto;
 import com.keb.fmhj.post.domain.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,24 @@ public class PostService {
         postRepository.save(addPost);
     }
 
+    // 하나의 게시글 조회 - 댓글 보임
+    @Transactional
+    public OnePostDetailDto getOnePost(Long postId) {
+
+        Post post = ensurePostExists(postId);
+        return OnePostDetailDto.toDto(post);
+    }
+
+    // 전체 게시글 조회 - 게시판 페이지
+    @Transactional
+    public List<PostDetailDto> getAllPosts() {
+        return postRepository
+                .findAll()
+                .stream()
+                .map(PostDetailDto::toDto)
+                .collect(Collectors.toList());
+    }
+
     // 회원이 작성한 게시글들 조회
     @Transactional(readOnly = true)
     public List<PostDetailDto> getMemberPost(String loginId) {
@@ -46,16 +65,6 @@ public class PostService {
                 .findAllByMember_loginId(loginId)
                 .stream()
                 .map((Object post) -> PostDetailDto.toDto((Post) post))
-                .collect(Collectors.toList());
-    }
-
-    // 전체 게시글 조회
-    @Transactional
-    public List<PostDetailDto> getAllPosts() {
-        return postRepository
-                .findAll()
-                .stream()
-                .map(PostDetailDto::toDto)
                 .collect(Collectors.toList());
     }
 

@@ -34,7 +34,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 헤더에서 access키에 담긴 토큰을 꺼냄
         String authorizationHeader = request.getHeader("Authorization");
-        String accessToken = request.getHeader("Authorization");
+        String accessToken = null;
 
         // 헤더에서 토큰 추출
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
