@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/likes")
+@RequestMapping("/likes/{postId}")
 @Tag(name = "Like", description = "좋아요 관련 API")
 public class LikeController {
 
     private final LikeService likeService;
 
-    @PostMapping
+    @PutMapping
     @Operation(summary = "좋아요 등록 API", description = "새로운 좋아요를 등록합니다.")
-    public ApiResponse<Void> addLike(@RequestParam Long postId) {
+    public ApiResponse<Void> addLike(@PathVariable Long postId) {
 
         String loginId = AccessTokenUtils.isPermission();
         likeService.addLike(loginId, postId);
@@ -28,7 +28,7 @@ public class LikeController {
 
     @DeleteMapping
     @Operation(summary = "좋아요 삭제 API", description = "좋아요를 삭제합니다.")
-    public ApiResponse<Void> deleteLike(@RequestParam Long postId){
+    public ApiResponse<Void> deleteLike(@PathVariable Long postId){
 
         String loginId = AccessTokenUtils.isPermission();
         likeService.deleteLike(loginId, postId);
