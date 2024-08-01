@@ -5,6 +5,7 @@ import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.response.ApiResponse;
 import com.keb.fmhj.post.domain.dto.request.AddPostDto;
 import com.keb.fmhj.post.domain.dto.request.UpdatePostDto;
+import com.keb.fmhj.post.domain.dto.response.OnePostDetailDto;
 import com.keb.fmhj.post.domain.dto.response.PostDetailDto;
 import com.keb.fmhj.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +31,14 @@ public class PostController {
         String loginId = AccessTokenUtils.isPermission();
         postService.createPost(addPostDto, loginId);
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
+    }
+
+    @GetMapping
+    @Operation(summary = "하나의 게시글 조회 API", description = "하나의 게시글을 조회합니다.")
+    public ApiResponse<OnePostDetailDto> getOnePosts(@RequestParam Long postId) {
+
+        OnePostDetailDto post = postService.getOnePost(postId);
+        return new ApiResponse<>(post);
     }
 
     @GetMapping

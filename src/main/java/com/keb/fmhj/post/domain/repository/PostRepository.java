@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     Collection<Object> findAllByMember_loginId(String loginId);
+
+    Optional<Post> findByPostId(Long postId);
 }

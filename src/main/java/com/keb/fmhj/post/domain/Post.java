@@ -36,9 +36,6 @@ public class Post extends BaseTimeEntity {
     private Long commentCount;
 
     @Column
-    private Long viewCount;
-
-    @Column
     @Enumerated(EnumType.STRING)
     private Category category;
 
