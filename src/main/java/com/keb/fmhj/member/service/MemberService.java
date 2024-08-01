@@ -99,9 +99,9 @@ public class MemberService {
 
     // 마이페이지
     @Transactional
-    public MypageResponseDto getMypage(MypageReqeustDto reqeustDto){
+    public MypageResponseDto getMypage(String loginId, MypageReqeustDto reqeustDto){
 
-        Member member = memberRepository.findById(1L).orElseThrow(() -> YouthException.from(ErrorCode.INVALID_REQUEST));
+        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> YouthException.from(ErrorCode.INVALID_REQUEST));
 
         Result result = Result.builder()
                 .member(member)

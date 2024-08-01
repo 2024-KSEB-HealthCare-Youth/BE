@@ -24,6 +24,7 @@ import java.util.List;
 @Tag(name = "member", description = "회원 관련 API")
 public class MemberController {
 
+    private final AccessTokenUtils accessTokenUtils;
     private final MemberService memberService;
 
     @PostMapping("/join")
@@ -75,6 +76,6 @@ public class MemberController {
     @Operation(summary = "마이페이지 API", description = "마이페이지를 불러옵니다.")
     public ApiResponse<MypageResponseDto> getMypage(@RequestBody MypageReqeustDto mypageReqeustDto){
 
-        return new ApiResponse<>(memberService.getMypage(mypageReqeustDto));
+        return new ApiResponse<>(memberService.getMypage(accessTokenUtils.isPermission(), mypageReqeustDto));
     }
 }

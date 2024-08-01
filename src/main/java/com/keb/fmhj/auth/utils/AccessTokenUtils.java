@@ -5,7 +5,9 @@ import com.keb.fmhj.global.exception.YouthException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AccessTokenUtils {
 
     public static String isPermission() {
