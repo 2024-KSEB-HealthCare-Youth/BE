@@ -42,6 +42,9 @@ public enum ErrorCode {
     // like
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요한 게시글이 아닙니다."),
 
+    //result
+    RESULT_NOT_FOUND(HttpStatus.NOT_FOUND, "일치하는 결과 데이터가 존재하지 않습니다."),
+
     // item
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 제품입니다."),
     ITEM_ALREADY_EXIST(HttpStatus.CONFLICT, "이미 존재하는 제품입니다."),

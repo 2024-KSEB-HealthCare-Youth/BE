@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface ResultService {
 
-    List<ResultList> getResultList();
-    LastResultDetail getResultDetail(Long resultId);
+    List<ResultList> getResultList(String loginId);
+    LastResultDetail getResultDetail(String LoginId,Long resultId);
 }
