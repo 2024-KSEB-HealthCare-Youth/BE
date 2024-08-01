@@ -26,7 +26,6 @@ public class LikeController {
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 
-    // 좋아요 삭제
     @DeleteMapping
     @Operation(summary = "좋아요 삭제 API", description = "좋아요를 삭제합니다.")
     public ApiResponse<Void> deleteLike(@RequestParam Long postId){
