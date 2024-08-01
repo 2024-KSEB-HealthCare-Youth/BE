@@ -33,9 +33,9 @@ public class PostController {
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 
-    @GetMapping
+    @GetMapping("/{postId}")
     @Operation(summary = "하나의 게시글 조회 API", description = "하나의 게시글을 조회합니다.")
-    public ApiResponse<OnePostDetailDto> getOnePosts(@RequestParam Long postId) {
+    public ApiResponse<OnePostDetailDto> getOnePost(@PathVariable Long postId) {
 
         OnePostDetailDto post = postService.getOnePost(postId);
         return new ApiResponse<>(post);
