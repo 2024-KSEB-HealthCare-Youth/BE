@@ -20,6 +20,7 @@ public class OnePostDetailDto {
     private Category category;
     private String profileImage;
     private String nickName;
+    private String content;
     private List<CommentDetailDto> comments;
     private LocalDateTime createdAt;
 
@@ -31,6 +32,7 @@ public class OnePostDetailDto {
                 .category(post.getCategory())
                 .profileImage(post.getMember().getProfileImage())
                 .nickName(post.getMember().getNickName())
+                .content(post.getContent())
                 .comments(post.getComments()
                         .stream()
                         .map(CommentDetailDto::toDto)
