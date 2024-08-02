@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 public class CommentDetailDto {
 
     private Long postId;
-    private Long commentId;
     private String nickName;
     private String profileImage;
     private String content;
@@ -20,7 +19,6 @@ public class CommentDetailDto {
     public static CommentDetailDto toDto(Comment comment) {
         return CommentDetailDto.builder()
                 .postId(comment.getPost().getPostId())
-                .commentId(comment.getCommentId())
                 .nickName(comment.getMember().getNickName())
                 .profileImage(comment.getMember().getProfileImage())
                 .content(comment.getContent())
