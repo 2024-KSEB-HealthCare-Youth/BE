@@ -19,19 +19,19 @@ public class LikeController {
 
     @PutMapping
     @Operation(summary = "좋아요 등록 API", description = "새로운 좋아요를 등록합니다.")
-    public ApiResponse<Void> addLike(@PathVariable Long postId) {
+    public ApiResponse<Void> addLike(@PathVariable("postId") Long postId) {
 
         String loginId = AccessTokenUtils.isPermission();
         likeService.addLike(loginId, postId);
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
-
-    @DeleteMapping
-    @Operation(summary = "좋아요 삭제 API", description = "좋아요를 삭제합니다.")
-    public ApiResponse<Void> deleteLike(@PathVariable Long postId){
-
-        String loginId = AccessTokenUtils.isPermission();
-        likeService.deleteLike(loginId, postId);
-        return new ApiResponse<>(ErrorCode.REQUEST_OK);
-    }
+//
+//    @DeleteMapping
+//    @Operation(summary = "좋아요 삭제 API", description = "좋아요를 삭제합니다.")
+//    public ApiResponse<Void> deleteLike(@PathVariable("postId") Long postId){
+//
+//        String loginId = AccessTokenUtils.isPermission();
+//        likeService.deleteLike(loginId, postId);
+//        return new ApiResponse<>(ErrorCode.REQUEST_OK);
+//    }
 }

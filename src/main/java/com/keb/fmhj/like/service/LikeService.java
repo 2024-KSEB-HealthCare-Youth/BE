@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Service
 @RequiredArgsConstructor
 public class LikeService {
@@ -20,48 +21,66 @@ public class LikeService {
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
 
-    // 좋아요 등록
+    // 좋아요 등록 또는 삭제
     @Transactional
     public void addLike(String loginId, Long postId) {
-
         Member member = ensureMemberExists(loginId);
         Post post = ensurePostExists(postId);
+        Long memberId = member.getId();
 
-        Like like = Like.builder()
-                .member(member)
-                .post(post)
-                .build();
+        Like existingLike = likeRepository.findByMemberIdAndPost_PostId(memberId, postId).orElse(null);
+        if (existingLike != null) {
+            // 이미 좋아요가 존재하면 삭제
+            likeRepository.delete(existingLike);
 
-        likeRepository.save(like);
-
-        post.setLikeCount(post.getLikeCount() == null ? 1 : post.getLikeCount() + 1);
-        postRepository.save(post);
-    }
-
-    // 좋아요 삭제
-    @Transactional
-    public void deleteLike(String loginId, Long postId) {
-
-        Member member = ensureMemberExists(loginId);
-        Post post = ensurePostExists(postId);
-
-        Like like = Like.builder()
-                .member(member)
-                .post(post)
-                .build();
-
-        likeRepository.delete(like);
-
-        // 게시글의 좋아요 수 감소
-        if (post.getLikeCount() != null && post.getLikeCount() > 0) {
-            post.setLikeCount(post.getLikeCount() - 1);
-            postRepository.save(post);
+            // 게시글의 좋아요 수 감소
+            if (post.getLikeCount() != null && post.getLikeCount() > 0) {
+                post.setLikeCount(post.getLikeCount() - 1);
+            } else {
+                // 예외 처리: 좋아요 수가 이미 0인 경우
+                throw YouthException.from(ErrorCode.LIKE_NOT_FOUND);
+            }
         } else {
-            // 예외 처리: 좋아요 수가 이미 0인 경우
-            throw YouthException.from(ErrorCode.LIKE_NOT_FOUND);
+            // 좋아요가 존재하지 않으면 추가
+            Like like = Like.builder()
+                    .member(member)
+                    .post(post)
+                    .build();
+
+            likeRepository.save(like);
+
+            post.setLikeCount(post.getLikeCount() == null ? 1 : post.getLikeCount() + 1);
         }
+
         postRepository.save(post);
     }
+//
+//    // 좋아요 삭제
+//    @Transactional
+//    public void deleteLike(String loginId, Long postId) {
+//        Member member = ensureMemberExists(loginId);
+//        Long memberId = member.getId();
+//        Post post = ensurePostExists(postId);
+//
+//        Like like = likeRepository.findByMemberIdAndPost_PostId(memberId, postId).orElse(null);
+//        if (like == null) {
+//            throw YouthException.from(ErrorCode.LIKE_NOT_FOUND);
+//        }
+//
+//        likeRepository.delete(like);
+//
+//        // 게시글의 좋아요 수 감소
+//        if (post.getLikeCount() != null && post.getLikeCount() > 0) {
+//            post.setLikeCount(post.getLikeCount() - 1);
+//        } else {
+//            // 예외 처리: 좋아요 수가 이미 0인 경우
+//            throw YouthException.from(ErrorCode.LIKE_NOT_FOUND);
+//        }
+//
+//        postRepository.save(post);
+//    }
+
+
 
     // 회원 존재 유무 검증
     private Member ensureMemberExists(String loginId) {
