@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class LastResultDetail {
-    private Long resultId;
+
     private Long memberId;
     private String resultImage;
     private String faceImage;

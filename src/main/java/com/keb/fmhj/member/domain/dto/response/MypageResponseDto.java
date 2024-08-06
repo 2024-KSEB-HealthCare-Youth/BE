@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Builder
 @Getter
 @Setter
@@ -20,6 +22,6 @@ public class MypageResponseDto {
     private String phoneNumber;
     private String resultImage;
     private String resultDetails;
-    private AdvancedSkinType advancedSkinType;
+    private List<AdvancedSkinType> advancedSkinType;
     private BasicSkinType basicSkinType;
 }
