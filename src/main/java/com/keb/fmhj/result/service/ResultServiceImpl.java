@@ -54,7 +54,6 @@ public class ResultServiceImpl implements ResultService {
         if (result == null) throw YouthException.from(ErrorCode.RESULT_NOT_FOUND);
 
         LastResultDetail resultDetail = LastResultDetail.builder()
-                .resultId(resultId)
                 .memberId(member.getId())
                 .resultImage(result.getResultImage())
                 .faceImage(result.getFaceImage())

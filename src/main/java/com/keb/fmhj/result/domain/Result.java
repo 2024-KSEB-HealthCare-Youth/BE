@@ -21,9 +21,11 @@ public class Result extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "result_advanced_skin_type", joinColumns = @JoinColumn(name = "result_id"))
     @Enumerated(EnumType.STRING)
-    private AdvancedSkinType advancedSkinType;
+    @Column(name = "advanced_skin_type")
+    private List<AdvancedSkinType> advancedSkinType;
 
     @Column
     @Enumerated(EnumType.STRING)

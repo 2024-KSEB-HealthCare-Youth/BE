@@ -2,6 +2,9 @@ package com.keb.fmhj.member.service;
 
 import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
+import com.keb.fmhj.item.domain.Category;
+import com.keb.fmhj.item.domain.Item;
+import com.keb.fmhj.item.domain.repository.ItemRepository;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.member.domain.dto.request.MypageReqeustDto;
 import com.keb.fmhj.member.domain.dto.request.SignUpDto;
@@ -11,6 +14,8 @@ import com.keb.fmhj.member.domain.dto.response.MypageResponseDto;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
 import com.keb.fmhj.result.domain.Result;
 import com.keb.fmhj.result.domain.repository.ResultRepository;
+import com.keb.fmhj.result.domain.response.ResultList;
+import com.keb.fmhj.resultItem.domain.ResultItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,6 +36,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ResultRepository resultRepository;
+    private final ItemRepository itemRepository;
 
     // 회원 등록
     @Transactional
@@ -99,17 +107,62 @@ public class MemberService {
 
     // 마이페이지
     @Transactional
-    public MypageResponseDto getMypage(String loginId, MypageReqeustDto reqeustDto){
+    public MypageResponseDto getMypage(String loginId, MypageReqeustDto requestDto) {
 
-        Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> YouthException.from(ErrorCode.INVALID_REQUEST));
+        Member member = memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> YouthException.from(ErrorCode.INVALID_REQUEST));
 
+        // 결과 저장
         Result result = Result.builder()
                 .member(member)
-                .advancedSkinType(reqeustDto.getAdvancedSkinType())
-                .basicSkinType(reqeustDto.getBasicSkinType())
-                .resultImage(reqeustDto.getResultImage())
-                .faceImage(reqeustDto.getFaceImage())
+                .advancedSkinType(Optional.ofNullable(requestDto.getAdvancedSkinType()).orElse(Collections.emptyList()))
+                .basicSkinType(requestDto.getBasicSkinType())
+                .resultImage(requestDto.getResultImage())
+                .faceImage(requestDto.getFaceImage())
+                .resultItems(new ArrayList<>()) // 초기화
                 .build();
+
+        List<Item> cosResultItem = requestDto.getCosNames().stream()
+                .map(name -> {
+                    int index = requestDto.getCosNames().indexOf(name);
+                    String imgPath = requestDto.getCosPaths().get(index);
+                    return Item.builder()
+                            .name(name)
+                            .itemImage(imgPath)
+                            .category(Category.COSMETIC)
+                            .build();
+                }).collect(Collectors.toList());
+
+        List<Item> nutrResultItem = requestDto.getNutrNames().stream()
+                .map(name -> {
+                    int index = requestDto.getNutrNames().indexOf(name);
+                    String imgPath = requestDto.getNutrPaths().get(index);
+                    return Item.builder()
+                            .name(name)
+                            .itemImage(imgPath)
+                            .category(Category.NUTRIENT)
+                            .build();
+                }).collect(Collectors.toList());
+
+        itemRepository.saveAll(cosResultItem);
+        itemRepository.saveAll(nutrResultItem);
+
+        List<ResultItem> cosResultItems = cosResultItem.stream()
+                .map(item -> ResultItem.builder()
+                        .result(result)
+                        .item(item)
+                        .build())
+                .collect(Collectors.toList());
+
+        List<ResultItem> nutrResultItems = nutrResultItem.stream()
+                .map(item -> ResultItem.builder()
+                        .result(result)
+                        .item(item)
+                        .build())
+                .collect(Collectors.toList());
+
+        result.getResultItems().addAll(cosResultItems);
+        result.getResultItems().addAll(nutrResultItems);
 
         resultRepository.save(result);
 
@@ -123,9 +176,11 @@ public class MemberService {
                 .resultImage(result.getResultImage())
                 .resultDetails(result.getDetails())
                 .basicSkinType(result.getBasicSkinType())
-                .advancedSkinType(result.getAdvancedSkinType())
+                .advancedSkinType(result.getAdvancedSkinType().stream().toList())
                 .build();
     }
+
+
 
     // 회원 존재 유무 검증
     private Member ensureMemberExists(String loginId) {

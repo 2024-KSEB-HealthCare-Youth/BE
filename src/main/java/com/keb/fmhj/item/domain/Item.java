@@ -2,15 +2,14 @@ package com.keb.fmhj.item.domain;
 
 import com.keb.fmhj.resultItem.domain.ResultItem;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
+@Builder
 @Entity
 @Getter @Setter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "recommend_item")
 public class Item {
@@ -25,21 +24,6 @@ public class Item {
 
     @Column(nullable = false)
     private String itemImage;
-
-    @Column
-    private String ingredients;
-
-    @Column
-    private String brand;
-
-    @Column(nullable = false)
-    private Long price;
-
-    @Column
-    private String link;
-
-    @Column
-    private String details;
 
     @Column
     @Enumerated(EnumType.STRING)
