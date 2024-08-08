@@ -17,7 +17,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ResultServiceImpl implements ResultService {
 
     private final ResultRepository resultRepository;
@@ -25,6 +24,7 @@ public class ResultServiceImpl implements ResultService {
 
     //내가 진단했던 목록을 날짜별로 조회
     @Override
+    @Transactional
     public List<ResultList> getResultList(String loginId) {
 
         Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> YouthException.from(ErrorCode.INVALID_REQUEST));
@@ -45,6 +45,7 @@ public class ResultServiceImpl implements ResultService {
 
     //과거 진단 결과 조회
     @Override
+    @Transactional
     public LastResultDetail getResultDetail(String loginId, Long resultId) {
 
         Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> YouthException.from(ErrorCode.INVALID_REQUEST));
@@ -55,7 +56,7 @@ public class ResultServiceImpl implements ResultService {
 
         LastResultDetail resultDetail = LastResultDetail.builder()
                 .memberId(member.getId())
-                .resultImage(result.getResultImage())
+                .probabilities(result.getProbability())
                 .faceImage(result.getFaceImage())
                 .details(result.getDetails())
                 .resultDate(result.getCreatedAt())

@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ResultItemService {
 
     private final ResultRepository resultRepository;
     private final ResultItemRepository resultItemRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public RecommendData getResultItems(String loginId) {
         // 1. Member를 가져오고, 그로부터 최근 Result를 가져옵니다.
         Member member = memberRepository.findByLoginId(loginId)

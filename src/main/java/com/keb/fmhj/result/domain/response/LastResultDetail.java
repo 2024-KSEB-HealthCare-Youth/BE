@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Builder
 @Getter
@@ -12,8 +13,8 @@ import java.time.LocalDateTime;
 public class LastResultDetail {
 
     private Long memberId;
-    private String resultImage;
     private String faceImage;
     private String details;
     private LocalDateTime resultDate;
+    private Map<String, Double> probabilities;
 }

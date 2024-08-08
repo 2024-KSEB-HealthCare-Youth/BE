@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "result", description = "결과화면 API")
 public class ResultController {
 
-    private final AccessTokenUtils accessTokenUtils;
     private final ResultService resultService;
 
     // 임시매개변수-> 멤버 아이디
@@ -26,13 +25,13 @@ public class ResultController {
     @Operation(summary = "전체 결과 화면 조회 API", description = "전체 결과 화면을 조회합니다.")
     public ApiResponse<?> getResultList(){
 
-        return new ApiResponse<>(resultService.getResultList(accessTokenUtils.isPermission()));
+        return new ApiResponse<>(resultService.getResultList(AccessTokenUtils.isPermission()));
     }
 
     @GetMapping("/{resultId}")
     public ApiResponse<?> getResultDetail(@PathVariable("resultId") Long resultId){
 
-        return new ApiResponse<>(resultService.getResultDetail(accessTokenUtils.isPermission(), resultId));
+        return new ApiResponse<>(resultService.getResultDetail(AccessTokenUtils.isPermission(), resultId));
     }
 
 }

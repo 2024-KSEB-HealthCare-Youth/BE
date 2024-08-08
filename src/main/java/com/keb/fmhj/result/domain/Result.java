@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -31,8 +32,11 @@ public class Result extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private BasicSkinType basicSkinType;
 
-    @Column(nullable = false)
-    private String resultImage;
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name="result_probabilities", joinColumns = @JoinColumn(name = "result_id"))
+    @MapKeyColumn(name="type")
+    @Column(name="value")
+    private Map<String, Double> probability;
 
     @Column(nullable = false)
     private String faceImage;
