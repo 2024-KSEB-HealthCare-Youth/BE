@@ -36,19 +36,4 @@ public class SignUpDto {
 
     @Builder.Default
     private IsAdmin isAdmin = IsAdmin.USER;
-
-    public static Member toEntity(SignUpDto requestDto) {
-        return Member.builder()
-                .loginId(requestDto.getLoginId())
-                .password(requestDto.getPassword())
-                .name(requestDto.getName())
-                .nickName(requestDto.getNickName())
-                .gender(requestDto.getGender())
-                .age(requestDto.getAge())
-                .phoneNumber(requestDto.getPhoneNumber())
-                .email(requestDto.getEmail())
-                .profileImage(requestDto.getProfileImage())
-                .isAdmin(requestDto.getIsAdmin())
-                .build();
-    }
 }
