@@ -6,12 +6,12 @@ import com.keb.fmhj.result.domain.BasicSkinType;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @NoArgsConstructor(access =  AccessLevel.PROTECTED)
 public class MypageReqeustDto {
 
-    private String resultImage;
     private String resultDetails;
     private String faceImage;
     private BasicSkinType basicSkinType;
@@ -20,9 +20,10 @@ public class MypageReqeustDto {
     private List<String> cosPaths;
     private List<String> nutrNames;
     private List<String> nutrPaths;
+    private Map<String,Double> probabilities;
 
-    public MypageReqeustDto(String resultImage, String resultDetails, String faceImage, BasicSkinType basicSkinType, List<AdvancedSkinType> advancedSkinType) {
-        this.resultImage = resultImage;
+    public MypageReqeustDto(String resultDetails, String faceImage, BasicSkinType basicSkinType, List<AdvancedSkinType> advancedSkinType) {
+
         this.resultDetails = resultDetails;
         this.faceImage = faceImage;
         this.basicSkinType = basicSkinType;

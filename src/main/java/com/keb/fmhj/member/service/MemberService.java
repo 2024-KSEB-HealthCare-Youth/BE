@@ -85,12 +85,7 @@ public class MemberService {
 
         Member member = ensureMemberExists(loginId);
         validateMemberOwner(member, loginId);
-
-        member.setName(updateDto.getName());
-        member.setNickName(updateDto.getNickName());
-        member.setEmail(updateDto.getEmail());
-        member.setPhoneNumber(updateDto.getPhoneNumber());
-        member.setProfileImage(updateDto.getProfileImage());
+        member.update(updateDto.getName(), updateDto.getNickName(), updateDto.getEmail(), updateDto.getPhoneNumber(), updateDto.getProfileImage());
 
         memberRepository.save(member);
     }
@@ -117,8 +112,8 @@ public class MemberService {
                 .member(member)
                 .advancedSkinType(Optional.ofNullable(requestDto.getAdvancedSkinType()).orElse(Collections.emptyList()))
                 .basicSkinType(requestDto.getBasicSkinType())
-                .resultImage(requestDto.getResultImage())
                 .faceImage(requestDto.getFaceImage())
+                .probability(requestDto.getProbabilities())
                 .resultItems(new ArrayList<>()) // 초기화
                 .build();
 
@@ -173,13 +168,12 @@ public class MemberService {
                 .age(member.getAge())
                 .email(member.getEmail())
                 .phoneNumber(member.getPhoneNumber())
-                .resultImage(result.getResultImage())
+                .probabilities(result.getProbability())
                 .resultDetails(result.getDetails())
                 .basicSkinType(result.getBasicSkinType())
                 .advancedSkinType(result.getAdvancedSkinType().stream().toList())
                 .build();
     }
-
 
 
     // 회원 존재 유무 검증

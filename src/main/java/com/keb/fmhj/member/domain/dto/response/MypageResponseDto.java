@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 @Builder
 @Getter
@@ -20,8 +21,8 @@ public class MypageResponseDto {
     private int age;
     private String email;
     private String phoneNumber;
-    private String resultImage;
     private String resultDetails;
     private List<AdvancedSkinType> advancedSkinType;
     private BasicSkinType basicSkinType;
+    private Map<String, Double> probabilities;
 }
