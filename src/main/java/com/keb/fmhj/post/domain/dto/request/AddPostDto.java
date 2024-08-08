@@ -24,6 +24,8 @@ public class AddPostDto {
         return Post.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
+                .likeCount(0L)
+                .commentCount(0L)
                 .category(request.getCategory())
                 .build();
     }
