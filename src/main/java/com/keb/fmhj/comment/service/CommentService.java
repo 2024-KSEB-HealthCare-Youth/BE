@@ -33,12 +33,9 @@ public class CommentService {
         Post post = ensurePostExists(postId);
         Member member = ensureMemberExists(loginId);
 
-        Comment addComment = Comment.builder()
-                .content(addDto.getContent())
-                .post(post)
-
-                .member(member)
-                .build();
+        Comment addComment = AddCommentDto.toEntity(addDto);
+        addComment.setPost(post);
+        addComment.setMember(member);
 
         commentRepository.save(addComment);
     }

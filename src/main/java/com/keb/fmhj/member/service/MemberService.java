@@ -85,12 +85,7 @@ public class MemberService {
 
         Member member = ensureMemberExists(loginId);
         validateMemberOwner(member, loginId);
-
-        member.setName(updateDto.getName());
-        member.setNickName(updateDto.getNickName());
-        member.setEmail(updateDto.getEmail());
-        member.setPhoneNumber(updateDto.getPhoneNumber());
-        member.setProfileImage(updateDto.getProfileImage());
+        member.update(updateDto.getName(), updateDto.getNickName(), updateDto.getEmail(), updateDto.getPhoneNumber(), updateDto.getProfileImage());
 
         memberRepository.save(member);
     }
@@ -179,8 +174,6 @@ public class MemberService {
                 .advancedSkinType(result.getAdvancedSkinType().stream().toList())
                 .build();
     }
-
-
 
     // 회원 존재 유무 검증
     private Member ensureMemberExists(String loginId) {
