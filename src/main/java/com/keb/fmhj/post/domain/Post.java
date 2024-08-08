@@ -30,10 +30,12 @@ public class Post extends BaseTimeEntity {
     private String content;
 
     @Column
-    private Long likeCount;
+    @Builder.Default
+    private Long likeCount = 0L;
 
     @Column
-    private Long commentCount;
+    @Builder.Default
+    private Long commentCount = 0L;
 
     @Column
     @Enumerated(EnumType.STRING)
