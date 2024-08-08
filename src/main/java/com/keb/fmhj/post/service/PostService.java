@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,16 +29,8 @@ public class PostService {
     public void createPost(AddPostDto addPostDto, String loginId) {
 
         Member member = ensureMemberExists(loginId);
-
-        Post addPost = Post.builder()
-                .title(addPostDto.getTitle())
-                .content(addPostDto.getContent())
-                .category(addPostDto.getCategory())
-                .member(member)
-                .likeCount(0L)
-                .commentCount(0L)
-                .comments(new ArrayList<>())
-                .build();
+        Post addPost = AddPostDto.toEntity(addPostDto);
+        addPost.setMember(member);
 
         postRepository.save(addPost);
     }
@@ -78,10 +69,7 @@ public class PostService {
 
         Post post = ensurePostExists(postId);
         validatePostOwner(post, loginId);
-
-        post.setTitle(updateDto.getTitle());
-        post.setContent(updateDto.getContent());
-        post.setCategory(updateDto.getCategory());
+        post.update(updateDto.getTitle(), updateDto.getContent(), updateDto.getCategory());
 
         postRepository.save(post);
     }
