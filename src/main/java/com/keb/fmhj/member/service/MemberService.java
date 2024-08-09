@@ -220,7 +220,7 @@ public class MemberService {
 
     // 회원 본인인지 검증
     private void validateMemberOwner(Member member, String loginId) {
-        if(member.getLoginId().equals(loginId)){
+        if(!member.getLoginId().equals(loginId)){
             throw YouthException.from(ErrorCode.MEMBER_NOT_AUTHENTICATED);
         }
     }
