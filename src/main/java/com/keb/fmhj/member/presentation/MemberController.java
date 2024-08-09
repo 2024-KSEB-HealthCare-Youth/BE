@@ -78,4 +78,12 @@ public class MemberController {
 
         return new ApiResponse<>(memberService.getMypage(accessTokenUtils.isPermission(), mypageReqeustDto));
     }
+
+    //마이페이지 조회
+    @GetMapping("/mypage")
+    @Operation(summary = "마이페이지 API", description = "마이페이지를 불러옵니다.")
+    public ApiResponse<MypageResponseDto> getResult(){
+
+        return new ApiResponse<>(memberService.getResult(accessTokenUtils.isPermission()));
+    }
 }

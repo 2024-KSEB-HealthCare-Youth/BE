@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -97,12 +98,12 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
+
     // 마이페이지
     @Transactional
     public MypageResponseDto getMypage(String loginId, MypageReqeustDto requestDto) {
 
-        Member member = memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> YouthException.from(ErrorCode.INVALID_REQUEST));
+        Member member = ensureMemberExists(loginId);
 
         // 결과 저장
         Result result = Result.builder()
@@ -172,7 +173,46 @@ public class MemberService {
                 .advancedSkinType(result.getAdvancedSkinType().stream().toList())
                 .build();
     }
-  
+
+    @Transactional
+    public MypageResponseDto getResult(String loginId){
+
+        Member member = ensureMemberExists(loginId);
+        Result result = resultRepository.findLatestResultByMemberId(member.getId());
+
+        return MypageResponseDto.builder()
+                .name(member.getName())
+                .nickname(member.getName())
+                .gender(member.getGender())
+                .age(member.getAge())
+                .email(member.getEmail())
+                .phoneNumber(member.getPhoneNumber())
+                .probabilities(result.getProbability())
+                .resultDetails(result.getDetails())
+                .basicSkinType(result.getBasicSkinType())
+                .advancedSkinType(result.getAdvancedSkinType().stream().toList())
+                .build();
+    }
+
+    private List<Item> createItems(List<String> names, List<String> paths, Category category) {
+        return IntStream.range(0, names.size())
+                .mapToObj(i -> Item.builder()
+                        .name(names.get(i))
+                        .itemImage(paths.get(i))
+                        .category(category)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private List<ResultItem> createResultItems(Result result, List<Item> items) {
+        return items.stream()
+                .map(item -> ResultItem.builder()
+                        .result(result)
+                        .item(item)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
     // 회원 존재 유무 검증
     private Member ensureMemberExists(String loginId) {
         return memberRepository.findByLoginId(loginId)
