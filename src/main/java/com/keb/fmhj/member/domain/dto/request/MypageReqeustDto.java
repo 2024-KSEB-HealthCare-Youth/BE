@@ -1,17 +1,19 @@
 package com.keb.fmhj.member.domain.dto.request;
 
-
 import com.keb.fmhj.result.domain.AdvancedSkinType;
 import com.keb.fmhj.result.domain.BasicSkinType;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.keb.fmhj.result.domain.Result;
+import lombok.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MypageReqeustDto {
 
     private String resultDetails;
@@ -24,11 +26,12 @@ public class MypageReqeustDto {
     private List<String> nutrPaths;
     private Map<String, Double> probabilities;
 
-    public MypageReqeustDto(String resultDetails, String faceImage, BasicSkinType basicSkinType, List<AdvancedSkinType> advancedSkinType) {
-
-        this.resultDetails = resultDetails;
-        this.faceImage = faceImage;
-        this.basicSkinType = basicSkinType;
-        this.advancedSkinType = advancedSkinType;
+    public static Result toEntity(MypageReqeustDto request) {
+        return Result.builder()
+                .details(request.resultDetails)
+                .faceImage(request.faceImage)
+                .basicSkinType(request.basicSkinType)
+                .advancedSkinType(Optional.ofNullable(request.advancedSkinType).orElse(Collections.emptyList()))
+                .build();
     }
 }
