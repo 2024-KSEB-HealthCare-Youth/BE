@@ -1,5 +1,6 @@
 package com.keb.fmhj.result.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
 import com.keb.fmhj.member.domain.Member;
