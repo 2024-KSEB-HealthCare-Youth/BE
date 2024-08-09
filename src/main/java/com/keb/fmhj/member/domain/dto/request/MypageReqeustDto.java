@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
-@NoArgsConstructor(access =  AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MypageReqeustDto {
 
     private String resultDetails;
@@ -22,7 +22,7 @@ public class MypageReqeustDto {
     private List<String> cosPaths;
     private List<String> nutrNames;
     private List<String> nutrPaths;
-    private Map<String,Double> probabilities;
+    private Map<String, Double> probabilities;
 
     public MypageReqeustDto(String resultDetails, String faceImage, BasicSkinType basicSkinType, List<AdvancedSkinType> advancedSkinType) {
 
