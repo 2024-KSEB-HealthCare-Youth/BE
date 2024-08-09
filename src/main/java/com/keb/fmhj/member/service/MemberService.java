@@ -111,6 +111,7 @@ public class MemberService {
                 .basicSkinType(requestDto.getBasicSkinType())
                 .faceImage(requestDto.getFaceImage())
                 .probability(requestDto.getProbabilities())
+                .details(requestDto.getResultDetails())
                 .resultItems(new ArrayList<>()) // 초기화
                 .build();
 
