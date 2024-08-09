@@ -98,7 +98,6 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-
     // 마이페이지
     @Transactional
     public MypageResponseDto getMypage(String loginId, MypageReqeustDto requestDto) {

@@ -33,6 +33,6 @@ public class UpdateMemberDto {
     @Schema(description = "성별", example = "MALE")
     private Gender gender;
 
-    @Schema(description = "프로필 이미지", example = "https://Desktop/face.jpeg")
+    @Schema(description = "프로필 이미지", example = "/Desktop/face.jpeg")
     private String profileImage;
 }
