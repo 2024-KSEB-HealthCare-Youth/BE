@@ -83,7 +83,7 @@ public class MemberService {
 
         Member member = ensureMemberExists(loginId);
         validateMemberOwner(member, loginId);
-        member.update(updateDto.getName(), updateDto.getNickName(), updateDto.getEmail(), updateDto.getPhoneNumber(), updateDto.getAge(), updateDto.getGender(), updateDto.getProfileImage());
+        member.update(updateDto.getName(), updateDto.getNickName(), updateDto.getEmail(), updateDto.getPhoneNumber(), updateDto.getProfileImage());
 
         memberRepository.save(member);
     }
