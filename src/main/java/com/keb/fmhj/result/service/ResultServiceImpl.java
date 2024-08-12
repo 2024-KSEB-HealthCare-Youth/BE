@@ -1,6 +1,5 @@
 package com.keb.fmhj.result.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
 import com.keb.fmhj.member.domain.Member;
@@ -13,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -48,16 +49,24 @@ public class ResultServiceImpl implements ResultService {
     @Override
     @Transactional
     public LastResultDetail getResultDetail(String loginId, Long resultId) {
-
+        HashMap<String, Double> saveProxy = new HashMap<>();
         Member member = memberRepository.findByLoginId(loginId).orElseThrow(() -> YouthException.from(ErrorCode.INVALID_REQUEST));
         Result result = resultRepository.findByMemberIdAndId(member.getId(), resultId);
 
         //result가 없는 경우
         if (result == null) throw YouthException.from(ErrorCode.RESULT_NOT_FOUND);
 
+        for(Map.Entry<String, Double> probability:result.getProbability().entrySet()){
+            String symptom = probability.getKey();
+            Double probabilityValue = probability.getValue();
+            saveProxy.put(symptom, probabilityValue);
+        }
+
+
+
         LastResultDetail resultDetail = LastResultDetail.builder()
                 .memberId(member.getId())
-                .probabilities(result.getProbability())
+                .probabilities(saveProxy)
                 .faceImage(result.getFaceImage())
                 .details(result.getDetails())
                 .resultDate(result.getCreatedAt())

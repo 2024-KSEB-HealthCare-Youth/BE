@@ -3,13 +3,12 @@ package com.keb.fmhj.resultItem.Service;
 import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
 import com.keb.fmhj.item.domain.Item;
+import com.keb.fmhj.item.domain.repository.ItemRepository;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
 import com.keb.fmhj.result.domain.Result;
 import com.keb.fmhj.result.domain.repository.ResultRepository;
-import com.keb.fmhj.resultItem.domain.ResultItem;
 import com.keb.fmhj.resultItem.domain.dto.response.RecommendData;
-import com.keb.fmhj.resultItem.domain.repository.ResultItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +21,9 @@ import java.util.stream.Collectors;
 public class ResultItemService {
 
     private final ResultRepository resultRepository;
-    private final ResultItemRepository resultItemRepository;
+    private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
+
 
     @Transactional
     public RecommendData getResultItems(String loginId) {
@@ -34,32 +34,13 @@ public class ResultItemService {
         Result recentResult = resultRepository.findLatestResultByMemberId(member.getId());
 
         // 2. 최근 Result의 ID로 ResultItem 리스트 가져오기
-        List<ResultItem> resultItems = resultItemRepository.findResultItemsByResultId(recentResult.getId());
+        List<Item> recommendItems = itemRepository.findItemsByResultId(recentResult.getId());
 
         // 3. Item 정보를 추출하여 각 리스트로 변환
-        List<String> cosNames = resultItems.stream()
-                .map(ResultItem::getItem) // ResultItem에서 Item을 추출
-                .filter(item -> item.getCategory().toString().equals("COSMETIC")) // 필터링 조건에 따라 조정
-                .map(Item::getName)
-                .collect(Collectors.toList());
-
-        List<String> cosPaths = resultItems.stream()
-                .map(ResultItem::getItem) // ResultItem에서 Item을 추출
-                .filter(item -> item.getCategory().toString().equals("COSMETIC")) // 필터링 조건에 따라 조정
-                .map(Item::getItemImage)
-                .collect(Collectors.toList());
-
-        List<String> nutrNames = resultItems.stream()
-                .map(ResultItem::getItem) // ResultItem에서 Item을 추출
-                .filter(item -> item.getCategory().toString().equals("NUTRIENT")) // 필터링 조건에 따라 조정
-                .map(Item::getName)
-                .collect(Collectors.toList());
-
-        List<String> nutrPaths = resultItems.stream()
-                .map(ResultItem::getItem) // ResultItem에서 Item을 추출
-                .filter(item -> item.getCategory().toString().equals("NUTRIENT")) // 필터링 조건에 따라 조정
-                .map(Item::getItemImage)
-                .collect(Collectors.toList());
+        List<String> cosNames = extractItemName(recommendItems, "COSMETIC");
+        List<String> cosPaths = extractItemImgPath(recommendItems, "COSMETIC");
+        List<String> nutrNames = extractItemName(recommendItems, "NUTRIENT");
+        List<String> nutrPaths = extractItemImgPath(recommendItems, "NUTRIENT");
 
         // 4. RecommendData 생성 및 반환
         return RecommendData.builder()
@@ -71,5 +52,25 @@ public class ResultItemService {
                 .nutrNames(nutrNames)
                 .nutrPaths(nutrPaths)
                 .build();
+    }
+
+    private List<String> extractItemName(List<Item> items, String category){
+
+        List<String> recommendItemNames = items.stream()
+                .filter(item->item.getCategory().toString().equals(category))
+                .map(Item::getName)
+                .collect(Collectors.toList());
+
+        return recommendItemNames;
+    }
+
+    private List<String> extractItemImgPath(List<Item> items, String category){
+
+        List<String> recommendItemNames = items.stream()
+                .filter(item->item.getCategory().toString().equals(category))
+                .map(Item::getName)
+                .collect(Collectors.toList());
+
+        return recommendItemNames;
     }
 }

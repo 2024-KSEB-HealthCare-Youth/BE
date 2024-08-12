@@ -71,19 +71,17 @@ public class MemberController {
         return new ApiResponse<>(ErrorCode.REQUEST_OK);
     }
 
-    //마이페이지 조회
     @PostMapping("/mypage")
-    @Operation(summary = "마이페이지 API", description = "마이페이지를 불러옵니다.")
-    public ApiResponse<MypageResponseDto> getMypage(@RequestBody MypageReqeustDto mypageReqeustDto){
+    @Operation(summary = "진단 결과 저장 API", description = "AI 진단 결과를 저장합니다.")
+    public ApiResponse<MypageResponseDto> saveResult(@RequestBody MypageReqeustDto mypageReqeustDto){
 
-        return new ApiResponse<>(memberService.getMypage(accessTokenUtils.isPermission(), mypageReqeustDto));
+        return new ApiResponse<>(memberService.saveResult(accessTokenUtils.isPermission(), mypageReqeustDto));
     }
 
-    //마이페이지 조회
     @GetMapping("/mypage")
-    @Operation(summary = "마이페이지 API", description = "마이페이지를 불러옵니다.")
-    public ApiResponse<MypageResponseDto> getResult(){
+    @Operation(summary = "마이페이지 API", description = "진단 결과를 포함한 마이페이지를 불러옵니다.")
+    public ApiResponse<MypageResponseDto> getMyPage(){
 
-        return new ApiResponse<>(memberService.getResult(accessTokenUtils.isPermission()));
+        return new ApiResponse<>(memberService.getMyPage(accessTokenUtils.isPermission()));
     }
 }
