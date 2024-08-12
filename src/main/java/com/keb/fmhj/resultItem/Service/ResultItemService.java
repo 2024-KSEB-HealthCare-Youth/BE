@@ -44,7 +44,7 @@ public class ResultItemService {
 
         // 4. RecommendData 생성 및 반환
         return RecommendData.builder()
-                .name(member.getNickName())
+                .name(member.getName())
                 .basicSkinType(recentResult.getBasicSkinType())
                 .advancedSkinType(recentResult.getAdvancedSkinType().stream().toList())
                 .cosNames(cosNames)
