@@ -56,11 +56,11 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Result> results;
 
-    public void update(String name, String nickName, String phoneNumber, String email, String profileImage) {
+    public void update(String name, String nickName, String email, String phoneNumber, String profileImage) {
         this.name = name;
         this.nickName = nickName;
-        this.phoneNumber = phoneNumber;
         this.email = email;
+        this.phoneNumber = phoneNumber;
         this.profileImage = profileImage;
     }
 }
