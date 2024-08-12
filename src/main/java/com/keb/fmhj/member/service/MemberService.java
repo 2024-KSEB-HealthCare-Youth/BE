@@ -20,10 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -83,7 +80,7 @@ public class MemberService {
 
         Member member = ensureMemberExists(loginId);
         validateMemberOwner(member, loginId);
-        member.update(updateDto.getName(), updateDto.getNickName(), updateDto.getEmail(), updateDto.getPhoneNumber(), updateDto.getAge(), updateDto.getGender(), updateDto.getProfileImage());
+        member.update(updateDto.getName(), updateDto.getNickName(), updateDto.getEmail(), updateDto.getPhoneNumber(), updateDto.getProfileImage());
 
         memberRepository.save(member);
     }
@@ -98,9 +95,9 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-    // 마이페이지
+    // AI 진단 결과 저장
     @Transactional
-    public MypageResponseDto getMypage(String loginId, MypageReqeustDto requestDto) {
+    public MypageResponseDto saveResult(String loginId, MypageReqeustDto requestDto) {
 
         Member member = ensureMemberExists(loginId);
 
@@ -115,53 +112,31 @@ public class MemberService {
                 .resultItems(new ArrayList<>()) // 초기화
                 .build();
 
-        List<Item> cosResultItem = requestDto.getCosNames().stream()
-                .map(name -> {
-                    int index = requestDto.getCosNames().indexOf(name);
-                    String imgPath = requestDto.getCosPaths().get(index);
-                    return Item.builder()
-                            .name(name)
-                            .itemImage(imgPath)
-                            .category(Category.COSMETIC)
-                            .build();
-                }).collect(Collectors.toList());
+        List<Item> cosResultItem = createItems(requestDto.getCosNames(), requestDto.getCosPaths(), Category.COSMETIC);
+        List<Item> nutrResultItem = createItems(requestDto.getNutrNames(), requestDto.getNutrPaths(), Category.NUTRIENT);
 
-        List<Item> nutrResultItem = requestDto.getNutrNames().stream()
-                .map(name -> {
-                    int index = requestDto.getNutrNames().indexOf(name);
-                    String imgPath = requestDto.getNutrPaths().get(index);
-                    return Item.builder()
-                            .name(name)
-                            .itemImage(imgPath)
-                            .category(Category.NUTRIENT)
-                            .build();
-                }).collect(Collectors.toList());
+        List<Item> c = new ArrayList<>();
+        c.addAll(cosResultItem);
+        c.addAll(nutrResultItem);
 
-        itemRepository.saveAll(cosResultItem);
-        itemRepository.saveAll(nutrResultItem);
+        itemRepository.saveAll(c);
 
-        List<ResultItem> cosResultItems = cosResultItem.stream()
+        List<ResultItem> resultItems = c.stream()
                 .map(item -> ResultItem.builder()
                         .result(result)
                         .item(item)
                         .build())
                 .collect(Collectors.toList());
 
-        List<ResultItem> nutrResultItems = nutrResultItem.stream()
-                .map(item -> ResultItem.builder()
-                        .result(result)
-                        .item(item)
-                        .build())
-                .collect(Collectors.toList());
 
-        result.getResultItems().addAll(cosResultItems);
-        result.getResultItems().addAll(nutrResultItems);
+
+        result.getResultItems().addAll(resultItems);
 
         resultRepository.save(result);
 
         return MypageResponseDto.builder()
                 .name(member.getName())
-                .nickname(member.getName())
+                .nickname(member.getNickName())
                 .gender(member.getGender())
                 .age(member.getAge())
                 .email(member.getEmail())
@@ -173,26 +148,34 @@ public class MemberService {
                 .build();
     }
 
+    // 마이페이지 불러오기(진단결과 포함)
     @Transactional
-    public MypageResponseDto getResult(String loginId){
-
+    public MypageResponseDto getMyPage(String loginId){
+        HashMap<String, Double> getProbabilities = new HashMap<>();
         Member member = ensureMemberExists(loginId);
         Result result = resultRepository.findLatestResultByMemberId(member.getId());
 
+        for(Map.Entry<String, Double> probability:result.getProbability().entrySet()){
+            String symptom = probability.getKey();
+            Double probabilityValue = probability.getValue();
+            getProbabilities.put(symptom, probabilityValue);
+        }
+
         return MypageResponseDto.builder()
                 .name(member.getName())
-                .nickname(member.getName())
+                .nickname(member.getNickName())
                 .gender(member.getGender())
                 .age(member.getAge())
                 .email(member.getEmail())
                 .phoneNumber(member.getPhoneNumber())
-                .probabilities(result.getProbability())
+                .probabilities(getProbabilities)
                 .resultDetails(result.getDetails())
                 .basicSkinType(result.getBasicSkinType())
                 .advancedSkinType(result.getAdvancedSkinType().stream().toList())
                 .build();
     }
 
+    //아이템 추출
     private List<Item> createItems(List<String> names, List<String> paths, Category category) {
         return IntStream.range(0, names.size())
                 .mapToObj(i -> Item.builder()
@@ -203,14 +186,10 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    private List<ResultItem> createResultItems(Result result, List<Item> items) {
-        return items.stream()
-                .map(item -> ResultItem.builder()
-                        .result(result)
-                        .item(item)
-                        .build())
-                .collect(Collectors.toList());
-    }
+    /*아이템 중복 검사
+    private void validateExistItem(List<Item> items) {
+
+    }*/
 
     // 회원 존재 유무 검증
     private Member ensureMemberExists(String loginId) {
@@ -220,7 +199,7 @@ public class MemberService {
 
     // 회원 본인인지 검증
     private void validateMemberOwner(Member member, String loginId) {
-        if(member.getLoginId().equals(loginId)){
+        if(!member.getLoginId().equals(loginId)){
             throw YouthException.from(ErrorCode.MEMBER_NOT_AUTHENTICATED);
         }
     }

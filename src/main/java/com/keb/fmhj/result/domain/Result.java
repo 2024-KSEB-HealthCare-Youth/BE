@@ -32,7 +32,7 @@ public class Result extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private BasicSkinType basicSkinType;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name="result_probabilities", joinColumns = @JoinColumn(name = "result_id"))
     @MapKeyColumn(name="type")
     @Column(name="value")
