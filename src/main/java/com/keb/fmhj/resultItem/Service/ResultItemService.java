@@ -68,7 +68,7 @@ public class ResultItemService {
 
         List<String> recommendItemNames = items.stream()
                 .filter(item->item.getCategory().toString().equals(category))
-                .map(Item::getName)
+                .map(Item::getItemImage)
                 .collect(Collectors.toList());
 
         return recommendItemNames;
