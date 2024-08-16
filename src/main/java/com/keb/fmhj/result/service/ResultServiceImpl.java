@@ -4,6 +4,7 @@ import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
+import com.keb.fmhj.result.domain.AdvancedSkinType;
 import com.keb.fmhj.result.domain.Result;
 import com.keb.fmhj.result.domain.repository.ResultRepository;
 import com.keb.fmhj.result.domain.response.LastResultDetail;
@@ -35,9 +36,11 @@ public class ResultServiceImpl implements ResultService {
         if (results.isEmpty()) throw YouthException.from(ErrorCode.RESULT_NOT_FOUND);
 
         List<ResultList> resultList = results.stream().map(result -> {
+                    List<AdvancedSkinType> advancedSkinTypes = result.getAdvancedSkinType().stream().toList();
                     return ResultList.builder()
                             .resultId(result.getId())
                             .resultDate(result.getCreatedAt())
+                            .advancedSkinTypeList(advancedSkinTypes)
                             .build();
                 })
                 .toList();
