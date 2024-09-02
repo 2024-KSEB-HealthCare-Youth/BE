@@ -20,7 +20,6 @@ public class ResultController {
 
     private final ResultService resultService;
 
-    // 임시매개변수-> 멤버 아이디
     @GetMapping("/lists")
     @Operation(summary = "전체 결과 화면 조회 API", description = "전체 결과 화면을 조회합니다.")
     public ApiResponse<?> getResultList(){
@@ -33,5 +32,4 @@ public class ResultController {
 
         return new ApiResponse<>(resultService.getResultDetail(AccessTokenUtils.isPermission(), resultId));
     }
-
 }

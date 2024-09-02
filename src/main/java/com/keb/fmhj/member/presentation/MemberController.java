@@ -4,12 +4,14 @@ import com.keb.fmhj.auth.utils.AccessTokenUtils;
 import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.response.ApiResponse;
 import com.keb.fmhj.member.domain.Member;
-import com.keb.fmhj.member.domain.dto.request.MypageReqeustDto;
+import com.keb.fmhj.member.domain.dto.request.DiagnosisResult;
 import com.keb.fmhj.member.domain.dto.request.SignUpDto;
 import com.keb.fmhj.member.domain.dto.request.UpdateMemberDto;
 import com.keb.fmhj.member.domain.dto.response.MemberDetailDto;
 import com.keb.fmhj.member.domain.dto.response.MypageResponseDto;
 import com.keb.fmhj.member.service.MemberService;
+import com.keb.fmhj.result.domain.response.SavedResult;
+import com.keb.fmhj.result.service.ResultService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class MemberController {
 
     private final AccessTokenUtils accessTokenUtils;
     private final MemberService memberService;
+    private final ResultService resultService;
 
     @PostMapping("/join")
     @Operation(summary = "회원 등록 API", description = "회원 등록을 합니다.")
@@ -73,15 +76,18 @@ public class MemberController {
 
     @PostMapping("/mypage")
     @Operation(summary = "진단 결과 저장 API", description = "AI 진단 결과를 저장합니다.")
-    public ApiResponse<MypageResponseDto> saveResult(@RequestBody MypageReqeustDto mypageReqeustDto){
+    public ApiResponse<MypageResponseDto> afterDiagnosis(@RequestBody DiagnosisResult diagnosisResult) {
 
-        return new ApiResponse<>(memberService.saveResult(accessTokenUtils.isPermission(), mypageReqeustDto));
+        String loginId = accessTokenUtils.isPermission();
+        SavedResult savedResult = resultService.saveResult(loginId, diagnosisResult);
+        return new ApiResponse<>(memberService.getMyPage(loginId, savedResult));
     }
 
     @GetMapping("/mypage")
     @Operation(summary = "마이페이지 API", description = "진단 결과를 포함한 마이페이지를 불러옵니다.")
-    public ApiResponse<MypageResponseDto> getMyPage(){
+    public ApiResponse<MypageResponseDto> getMyPage() {
 
-        return new ApiResponse<>(memberService.getMyPage(accessTokenUtils.isPermission()));
+        String loginId = accessTokenUtils.isPermission();
+        return new ApiResponse<>(memberService.getMyPage(loginId, null));
     }
 }

@@ -2,11 +2,8 @@ package com.keb.fmhj.member.service;
 
 import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
-import com.keb.fmhj.item.domain.Category;
-import com.keb.fmhj.item.domain.Item;
 import com.keb.fmhj.item.domain.repository.ItemRepository;
 import com.keb.fmhj.member.domain.Member;
-import com.keb.fmhj.member.domain.dto.request.MypageReqeustDto;
 import com.keb.fmhj.member.domain.dto.request.SignUpDto;
 import com.keb.fmhj.member.domain.dto.request.UpdateMemberDto;
 import com.keb.fmhj.member.domain.dto.response.MemberDetailDto;
@@ -14,15 +11,14 @@ import com.keb.fmhj.member.domain.dto.response.MypageResponseDto;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
 import com.keb.fmhj.result.domain.Result;
 import com.keb.fmhj.result.domain.repository.ResultRepository;
-import com.keb.fmhj.resultItem.domain.ResultItem;
+import com.keb.fmhj.result.domain.response.SavedResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -95,70 +91,22 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-    // AI 진단 결과 저장
-    @Transactional
-    public MypageResponseDto saveResult(String loginId, MypageReqeustDto requestDto) {
-
-        Member member = ensureMemberExists(loginId);
-
-        // 결과 저장
-        Result result = Result.builder()
-                .member(member)
-                .advancedSkinType(Optional.ofNullable(requestDto.getAdvancedSkinType()).orElse(Collections.emptyList()))
-                .basicSkinType(requestDto.getBasicSkinType())
-                .faceImage(requestDto.getFaceImage())
-                .probability(requestDto.getProbabilities())
-                .details(requestDto.getResultDetails())
-                .resultItems(new ArrayList<>()) // 초기화
-                .build();
-
-        List<Item> cosResultItem = createItems(requestDto.getCosNames(), requestDto.getCosPaths(), Category.COSMETIC);
-        List<Item> nutrResultItem = createItems(requestDto.getNutrNames(), requestDto.getNutrPaths(), Category.NUTRIENT);
-
-        List<Item> c = new ArrayList<>();
-        c.addAll(cosResultItem);
-        c.addAll(nutrResultItem);
-
-        itemRepository.saveAll(c);
-
-        List<ResultItem> resultItems = c.stream()
-                .map(item -> ResultItem.builder()
-                        .result(result)
-                        .item(item)
-                        .build())
-                .collect(Collectors.toList());
-
-
-
-        result.getResultItems().addAll(resultItems);
-
-        resultRepository.save(result);
-
-        return MypageResponseDto.builder()
-                .name(member.getName())
-                .nickname(member.getNickName())
-                .gender(member.getGender())
-                .age(member.getAge())
-                .email(member.getEmail())
-                .phoneNumber(member.getPhoneNumber())
-                .probabilities(result.getProbability())
-                .resultDetails(result.getDetails())
-                .basicSkinType(result.getBasicSkinType())
-                .advancedSkinType(result.getAdvancedSkinType().stream().toList())
-                .build();
-    }
 
     // 마이페이지 불러오기(진단결과 포함)
     @Transactional
-    public MypageResponseDto getMyPage(String loginId){
-        HashMap<String, Double> getProbabilities = new HashMap<>();
-        Member member = ensureMemberExists(loginId);
-        Result result = resultRepository.findLatestResultByMemberId(member.getId());
+    public MypageResponseDto getMyPage(String loginId, SavedResult result) {
 
-        for(Map.Entry<String, Double> probability:result.getProbability().entrySet()){
-            String symptom = probability.getKey();
-            Double probabilityValue = probability.getValue();
-            getProbabilities.put(symptom, probabilityValue);
+        Member member = ensureMemberExists(loginId);
+
+        // 진단 직후가 아닌 경우(getMypage())
+        if (result == null) {
+
+            Result latestResult = resultRepository.findLatestResultByMemberId(member.getId());
+
+            // 진단 데이터가 존재하지 않는 경우 => 에러 처리
+            if(latestResult == null) throw YouthException.from(ErrorCode.RESULT_NOT_FOUND);
+            // 진단 데이터가 존재하는 경우 => Dto로 변환
+            else result = SavedResult.toDto(latestResult);
         }
 
         return MypageResponseDto.builder()
@@ -168,28 +116,13 @@ public class MemberService {
                 .age(member.getAge())
                 .email(member.getEmail())
                 .phoneNumber(member.getPhoneNumber())
-                .probabilities(getProbabilities)
-                .resultDetails(result.getDetails())
+                .probabilities(result.getProbabilities())
+                .resultDetails(result.getResultDetails())
                 .basicSkinType(result.getBasicSkinType())
                 .advancedSkinType(result.getAdvancedSkinType().stream().toList())
                 .build();
     }
 
-    //아이템 추출
-    private List<Item> createItems(List<String> names, List<String> paths, Category category) {
-        return IntStream.range(0, names.size())
-                .mapToObj(i -> Item.builder()
-                        .name(names.get(i))
-                        .itemImage(paths.get(i))
-                        .category(category)
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    /*아이템 중복 검사
-    private void validateExistItem(List<Item> items) {
-
-    }*/
 
     // 회원 존재 유무 검증
     private Member ensureMemberExists(String loginId) {
@@ -199,7 +132,7 @@ public class MemberService {
 
     // 회원 본인인지 검증
     private void validateMemberOwner(Member member, String loginId) {
-        if(!member.getLoginId().equals(loginId)){
+        if (!member.getLoginId().equals(loginId)) {
             throw YouthException.from(ErrorCode.MEMBER_NOT_AUTHENTICATED);
         }
     }
@@ -213,3 +146,4 @@ public class MemberService {
         }
     }
 }
+

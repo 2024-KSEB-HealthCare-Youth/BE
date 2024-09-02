@@ -4,6 +4,7 @@ import com.keb.fmhj.global.exception.ErrorCode;
 import com.keb.fmhj.global.exception.YouthException;
 import com.keb.fmhj.item.domain.Item;
 import com.keb.fmhj.item.domain.repository.ItemRepository;
+import com.keb.fmhj.item.service.ItemService;
 import com.keb.fmhj.member.domain.Member;
 import com.keb.fmhj.member.domain.repository.MemberRepository;
 import com.keb.fmhj.result.domain.Result;
@@ -23,10 +24,12 @@ public class ResultItemService {
     private final ResultRepository resultRepository;
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
+    private final ItemService itemService;
 
 
     @Transactional
     public RecommendData getResultItems(String loginId) {
+
         // 1. Member를 가져오고, 그로부터 최근 Result를 가져옵니다.
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> YouthException.from(ErrorCode.INVALID_REQUEST));
@@ -37,10 +40,10 @@ public class ResultItemService {
         List<Item> recommendItems = itemRepository.findItemsByResultId(recentResult.getId());
 
         // 3. Item 정보를 추출하여 각 리스트로 변환
-        List<String> cosNames = extractItemName(recommendItems, "COSMETIC");
-        List<String> cosPaths = extractItemImgPath(recommendItems, "COSMETIC");
-        List<String> nutrNames = extractItemName(recommendItems, "NUTRIENT");
-        List<String> nutrPaths = extractItemImgPath(recommendItems, "NUTRIENT");
+        List<String> cosNames = itemService.extractItemName(recommendItems, "COSMETIC");
+        List<String> cosPaths = itemService.extractItemImgPath(recommendItems, "COSMETIC");
+        List<String> nutrNames = itemService.extractItemName(recommendItems, "NUTRIENT");
+        List<String> nutrPaths = itemService.extractItemImgPath(recommendItems, "NUTRIENT");
 
         // 4. RecommendData 생성 및 반환
         return RecommendData.builder()
@@ -52,25 +55,5 @@ public class ResultItemService {
                 .nutrNames(nutrNames)
                 .nutrPaths(nutrPaths)
                 .build();
-    }
-
-    private List<String> extractItemName(List<Item> items, String category){
-
-        List<String> recommendItemNames = items.stream()
-                .filter(item->item.getCategory().toString().equals(category))
-                .map(Item::getName)
-                .collect(Collectors.toList());
-
-        return recommendItemNames;
-    }
-
-    private List<String> extractItemImgPath(List<Item> items, String category){
-
-        List<String> recommendItemNames = items.stream()
-                .filter(item->item.getCategory().toString().equals(category))
-                .map(Item::getItemImage)
-                .collect(Collectors.toList());
-
-        return recommendItemNames;
     }
 }
